@@ -1,7 +1,7 @@
 package frc.robot.subsystems.topdeck.advancer;
 
 import static frc.robot.Constants.NeoAdvancerConstants.*;
-import static frc.robot.subsystems.drive.DriveConstants.odometryFrequency;
+import static frc.robot.subsystems.drive.DriveConstants.*;
 import static frc.robot.util.SparkUtil.ifOk;
 import static frc.robot.util.SparkUtil.sparkStickyFault;
 import static frc.robot.util.SparkUtil.tryUntilOk;
