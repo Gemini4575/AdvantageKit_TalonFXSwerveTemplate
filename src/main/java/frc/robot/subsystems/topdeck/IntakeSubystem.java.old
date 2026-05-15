@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class IntakeSubystem extends SubsystemBase {
+public class Intake extends SubsystemBase {
 
   private TalonFX topintakeMotor;
   private TalonFX bottomintakeMotor2;
@@ -34,7 +34,7 @@ public class IntakeSubystem extends SubsystemBase {
   // .
   // .getEntry();
 
-  public IntakeSubystem() {
+  public Intake() {
     topintakeMotor = new TalonFX(TOP_INTAKE_MOTOR_ID);
     bottomintakeMotor2 = new TalonFX(BOTTOM_INTAKE_MOTOR_ID);
     rotationMotor = new SparkMax(INTAKE_SLIDER1_ID, MotorType.kBrushless);

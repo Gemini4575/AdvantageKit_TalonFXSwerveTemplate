@@ -60,9 +60,9 @@ public final class Constants {
     public static final int TOP_INTAKE_MOTOR_ID = 3;
     public static final int BOTTOM_INTAKE_MOTOR_ID = 4;
     public static final int INTAKE_ROTATOR_CAN_ID = 5;
-    public static final double INTAKE_SPEED = -1.0;
-    public static final double Intake_Down_SetPoint = 2;
-    public static final double Intake_Up_SetPoint = 24.5;
+    public static final double INTAKE_SPEED = 1.0;
+    public static final double Intake_Down_SetPoint = 24.5;
+    public static final double Intake_Up_SetPoint = 2;
   }
 
   public static final class ShooterConstants {

@@ -20,7 +20,7 @@ public class IntakeIOSpark implements intakeIO {
     rotatorMotor = new SparkMax(INTAKE_ROTATOR_CAN_ID, MotorType.kBrushless);
     SparkMaxConfig rotatorConfig = new SparkMaxConfig();
     rotatorConfig
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30, 30)
         .voltageCompensation(12)
         .inverted(true);
@@ -65,15 +65,15 @@ public class IntakeIOSpark implements intakeIO {
 
   @Override
   public boolean setIntakeOpenLoopUntilSetpointDown() {
-    rotatorMotor.set(-1.0);
+    rotatorMotor.set(1.0);
 
-    return rotatorMotor.getEncoder().getPosition() <= Intake_Down_SetPoint;
+    return rotatorMotor.getEncoder().getPosition() >= Intake_Down_SetPoint;
   }
 
   @Override
   public boolean setIntakeOpenLoopUntilSetpointUp() {
-    rotatorMotor.set(1.0);
+    rotatorMotor.set(-1.0);
 
-    return rotatorMotor.getEncoder().getPosition() >= Intake_Up_SetPoint;
+    return rotatorMotor.getEncoder().getPosition() <= Intake_Up_SetPoint;
   }
 }

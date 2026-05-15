@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.intake.ExtendOrRectactIntake;
 import frc.robot.commands.shooter.ShootFromHubTele;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -229,7 +230,14 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    new JoystickButton(operator, 1).whileTrue(new ShootFromHubTele(shooter, advancer));
+    new JoystickButton(operator, 11).whileTrue(new ShootFromHubTele(shooter, advancer));
+
+    intake.setDefaultCommand(
+        new ExtendOrRectactIntake(
+            intake,
+            () -> operator.getRawButton(12),
+            () -> operator.getRawButton(13),
+            () -> operator.getRawButton(20)));
   }
 
   /**
