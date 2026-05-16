@@ -61,6 +61,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final Joystick operator = new Joystick(1);
+  private final Joystick driver = new Joystick(2);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -201,10 +202,7 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> controller.getLeftY(),
-            () -> controller.getLeftX(),
-            () -> -controller.getRightX()));
+            drive, () -> driver.getY(), () -> driver.getX(), () -> -driver.getTwist()));
 
     // Lock to 0° when A button is held
     controller
@@ -220,8 +218,7 @@ public class RobotContainer {
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
+    new JoystickButton(driver, 12)
         .onTrue(
             Commands.runOnce(
                     () ->
