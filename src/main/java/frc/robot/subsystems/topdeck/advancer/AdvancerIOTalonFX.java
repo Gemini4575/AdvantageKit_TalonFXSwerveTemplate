@@ -36,6 +36,8 @@ public class AdvancerIOTalonFX implements AdvancerIO {
     advancerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     advancerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     advancerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    advancerConfig.Slot0.kS = 0.11525;
+    advancerConfig.Slot0.kV = 0.00196;
     advancerConfig.MotorOutput.Inverted =
         ADVANCER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive

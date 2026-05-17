@@ -34,6 +34,22 @@ public class AdvancerMotor {
     io.setAdvancerVelocity(velocityRotationsPerMin);
   }
 
+  public double getPositionRot() {
+    return inputs.advancerPositionRot;
+  }
+
+  public double getVelocityRPM() {
+    return inputs.advancerVelocityRPM;
+  }
+
+  public double getAppliedVolts() {
+    return inputs.advancerAppliedVolts;
+  }
+
+  public double getSupplyCurrentAmps() {
+    return inputs.advancerSupplyCurrentAmps;
+  }
+
   public void stop() {
     io.setAdvancerOpenLoop(0.0);
   }

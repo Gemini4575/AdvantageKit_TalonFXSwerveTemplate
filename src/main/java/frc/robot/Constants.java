@@ -33,7 +33,7 @@ public final class Constants {
 
     public static final double ADVANCER_SPEED = -1.0;
     public static final double NEO_ADVANCER_SPEED = 1.0;
-    public static final double ADVANCER_ROLLER_SPEED = -0.5;
+    public static final double ADVANCER_ROLLER_SPEED = -1.0;
     public static final int ADVANCER_MOTOR_ID = 1;
     public static final int ROLLER_MOTOR_ID = 9;
     public static final int NEO_ADVANCER_MOTOR_ID = 8; // was climber
@@ -50,8 +50,8 @@ public final class Constants {
 
   public static final class NeoAdvancerConstants {
     public static final double KA = 0.0089868;
-    public static final double KV = 0.10849;
-    public static final double KS = 0.087923;
+    public static final double KV = 0.00211;
+    public static final double KS = 0.18438;
     public static final int NEO_ADVANCER_MOTOR_ID = 8;
     public static final boolean NEO_ADVANCER_MOTOR_INVERTED = false;
   }

@@ -116,6 +116,11 @@ public class AdvancerIOSpark implements AdvancerIO {
   }
 
   @Override
+  public void setAdvancerVoltage(double volts) {
+    advancerMotor.setVoltage(volts);
+  }
+
+  @Override
   public void setAdvancerVelocity(double velocityRotationsPerMin) {
     advancerController.setSetpoint(velocityRotationsPerMin, ControlType.kVelocity);
   }

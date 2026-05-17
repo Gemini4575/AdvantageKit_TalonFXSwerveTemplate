@@ -188,6 +188,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Advancer Roller SysId (Dynamic Reverse)",
         advancer.rollerSysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Advancer Talon Console SysId", advancer.talonConsoleSysId());
+    autoChooser.addOption("Advancer Neo Console SysId", advancer.neoConsoleSysId());
+    autoChooser.addOption("Advancer Roller Console SysId", advancer.rollerConsoleSysId());
 
     // Configure the button bindings
     configureButtonBindings();
