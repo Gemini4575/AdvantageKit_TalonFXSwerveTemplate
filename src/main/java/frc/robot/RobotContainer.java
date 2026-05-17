@@ -249,4 +249,28 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+
+  public void printSubsystemHealth() {
+    System.out.println("========== Subsystem Health Check ==========");
+    boolean driveOk = drive.printHealth();
+    boolean shooterOk = shooter.printHealth();
+    boolean advancerOk = advancer.printHealth();
+    boolean intakeOk = intake.printHealth();
+    boolean allGood = driveOk && shooterOk && advancerOk && intakeOk;
+    System.out.println("Overall robot health: " + (allGood ? "GOOD" : "BAD"));
+    System.out.println("============================================");
+  }
+
+  public Command getSubsystemTestCommand() {
+    return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                System.out.println(
+                    "Keep the robot safely lifted/clear: running subsystem target checks.")),
+        drive.motorResponseTest(),
+        shooter.motorResponseTest(),
+        advancer.motorResponseTest(),
+        intake.motorResponseTest(),
+        Commands.runOnce(() -> System.out.println("Subsystem motor response checks complete.")));
+  }
 }

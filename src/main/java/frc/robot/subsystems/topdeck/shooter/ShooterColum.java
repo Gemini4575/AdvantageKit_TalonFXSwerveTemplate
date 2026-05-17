@@ -51,4 +51,20 @@ public class ShooterColum {
   public void setVelocity(double velocityRotationsPerMin) {
     io.setShooterVelocity(velocityRotationsPerMin);
   }
+
+  public boolean isConnected() {
+    return inputs.shooterConnected;
+  }
+
+  public double getAppliedVolts() {
+    return inputs.shooterAppliedVolts;
+  }
+
+  public double getVelocityRotPerSec() {
+    return inputs.shooterVelocityRotPerSec;
+  }
+
+  public double getVelocityRPM() {
+    return inputs.shooterVelocityRotPerSec;
+  }
 }

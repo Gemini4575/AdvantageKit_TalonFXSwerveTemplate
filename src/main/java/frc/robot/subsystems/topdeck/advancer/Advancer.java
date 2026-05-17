@@ -19,6 +19,8 @@ public class Advancer extends SubsystemBase {
   private static final double FF_START_DELAY_SECS = 1.0;
   private static final double FF_RAMP_RATE_VOLTS_PER_SEC = 0.25;
   private static final double FF_PRINT_PERIOD_SECS = 0.25;
+  private static final double TEST_TARGET_RPM = 1000.0;
+  private static final double TEST_RPM_TOLERANCE = 150.0;
 
   private final AdvancerMotor talonAdvancer;
   private final AdvancerMotor neoAdvancer;
@@ -101,6 +103,24 @@ public class Advancer extends SubsystemBase {
     roller.setVoltage(volts);
   }
 
+  public void runTalonVelocity(double velocityRPM) {
+    talonAdvancer.setVelocity(velocityRPM);
+    neoAdvancer.stop();
+    roller.stop();
+  }
+
+  public void runNeoVelocity(double velocityRPM) {
+    talonAdvancer.stop();
+    neoAdvancer.setVelocity(velocityRPM);
+    roller.stop();
+  }
+
+  public void runRollerVelocity(double velocityRPM) {
+    talonAdvancer.stop();
+    neoAdvancer.stop();
+    roller.setVelocity(velocityRPM);
+  }
+
   public Command talonSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return run(this::stopAdvancer)
         .withTimeout(1.0)
@@ -140,6 +160,49 @@ public class Advancer extends SubsystemBase {
 
   public Command rollerConsoleSysId() {
     return consoleFeedforwardCharacterization("Roller", roller, this::runRollerCharacterization);
+  }
+
+  public boolean printHealth() {
+    boolean talonOk = talonAdvancer.isConnected();
+    boolean neoOk = neoAdvancer.isConnected();
+    boolean rollerOk = roller.isConnected();
+
+    System.out.println("Advancer:");
+    printMotorHealth("  Talon advancer", talonOk);
+    printMotorHealth("  Neo advancer", neoOk);
+    printMotorHealth("  Roller", rollerOk);
+    return talonOk && neoOk && rollerOk;
+  }
+
+  public Command motorResponseTest() {
+    return Commands.sequence(
+            Commands.runOnce(
+                () ->
+                    System.out.printf(
+                        "Advancer velocity check: target=%.0f RPM, tolerance=+/-%.0f RPM%n",
+                        TEST_TARGET_RPM, TEST_RPM_TOLERANCE)),
+            Commands.run(() -> runTalonVelocity(TEST_TARGET_RPM), this).withTimeout(1.0),
+            Commands.runOnce(() -> printMotorResponseHealth("  Talon advancer", talonAdvancer)),
+            Commands.run(() -> runNeoVelocity(TEST_TARGET_RPM), this).withTimeout(1.0),
+            Commands.runOnce(() -> printMotorResponseHealth("  Neo advancer", neoAdvancer)),
+            Commands.run(() -> runRollerVelocity(TEST_TARGET_RPM), this).withTimeout(1.0),
+            Commands.runOnce(() -> printMotorResponseHealth("  Roller", roller)))
+        .finallyDo(this::stopAdvancer);
+  }
+
+  private static void printMotorResponseHealth(String name, AdvancerMotor motor) {
+    double appliedVolts = Math.abs(motor.getAppliedVolts());
+    double velocityRPM = Math.abs(motor.getVelocityRPM());
+    double errorRPM = Math.abs(velocityRPM - TEST_TARGET_RPM);
+    boolean good = motor.isConnected() && errorRPM <= TEST_RPM_TOLERANCE;
+
+    System.out.printf(
+        "%s velocity: %s (target=%.0f RPM, measured=%.0f RPM, error=%.0f RPM, applied=%.2f V)%n",
+        name, good ? "GOOD" : "BAD", TEST_TARGET_RPM, velocityRPM, errorRPM, appliedVolts);
+  }
+
+  private static void printMotorHealth(String name, boolean good) {
+    System.out.println(name + ": " + (good ? "GOOD" : "BAD"));
   }
 
   private Command consoleFeedforwardCharacterization(

@@ -133,6 +133,8 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    robotContainer.printSubsystemHealth();
+    CommandScheduler.getInstance().schedule(robotContainer.getSubsystemTestCommand());
   }
 
   /** This function is called periodically during test mode. */

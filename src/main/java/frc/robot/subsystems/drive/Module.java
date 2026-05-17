@@ -109,6 +109,10 @@ public class Module {
     return inputs.driveVelocityRadPerSec * constants.WheelRadius;
   }
 
+  public double getDriveAppliedVolts() {
+    return inputs.driveAppliedVolts;
+  }
+
   /** Returns the module position (turn angle and drive position). */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(getPositionMeters(), getAngle());
@@ -137,5 +141,17 @@ public class Module {
   /** Returns the module velocity in rotations/sec (Phoenix native units). */
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
+  }
+
+  public boolean isDriveConnected() {
+    return inputs.driveConnected;
+  }
+
+  public boolean isTurnConnected() {
+    return inputs.turnConnected;
+  }
+
+  public boolean isTurnEncoderConnected() {
+    return inputs.turnEncoderConnected;
   }
 }

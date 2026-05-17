@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -64,6 +65,8 @@ public class Drive extends SubsystemBase {
   private static final double ROBOT_MASS_KG = 74.088;
   private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = 1.2;
+  private static final double TEST_TARGET_METERS_PER_SEC = 1.0;
+  private static final double TEST_VELOCITY_TOLERANCE_METERS_PER_SEC = 0.25;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
@@ -309,6 +312,71 @@ public class Drive extends SubsystemBase {
       output += modules[i].getFFCharacterizationVelocity() / 4.0;
     }
     return output;
+  }
+
+  public boolean printHealth() {
+    boolean gyroOk = gyroInputs.connected || Constants.currentMode != Mode.REAL;
+    boolean allGood = gyroOk;
+
+    System.out.println("Drive:");
+    System.out.println("  Gyro: " + (gyroOk ? "GOOD" : "BAD"));
+    for (int i = 0; i < modules.length; i++) {
+      boolean moduleOk =
+          modules[i].isDriveConnected()
+              && modules[i].isTurnConnected()
+              && modules[i].isTurnEncoderConnected();
+      System.out.println("  Module " + i + ": " + (moduleOk ? "GOOD" : "BAD"));
+      if (!moduleOk) {
+        System.out.println("    Drive motor: " + (modules[i].isDriveConnected() ? "GOOD" : "BAD"));
+        System.out.println("    Turn motor: " + (modules[i].isTurnConnected() ? "GOOD" : "BAD"));
+        System.out.println(
+            "    Turn encoder: " + (modules[i].isTurnEncoderConnected() ? "GOOD" : "BAD"));
+      }
+      allGood = allGood && moduleOk;
+    }
+
+    return allGood;
+  }
+
+  public Command motorResponseTest() {
+    return Commands.sequence(
+            Commands.runOnce(
+                () ->
+                    System.out.printf(
+                        "Drive velocity check: target=%.2f m/s, tolerance=+/-%.2f m/s%n",
+                        TEST_TARGET_METERS_PER_SEC, TEST_VELOCITY_TOLERANCE_METERS_PER_SEC)),
+            Commands.run(
+                    () -> runVelocity(new ChassisSpeeds(TEST_TARGET_METERS_PER_SEC, 0.0, 0.0)),
+                    this)
+                .withTimeout(1.5),
+            Commands.runOnce(this::printMotorResponseHealth))
+        .finallyDo(this::stop);
+  }
+
+  private void printMotorResponseHealth() {
+    boolean allGood = true;
+
+    for (int i = 0; i < modules.length; i++) {
+      double appliedVolts = Math.abs(modules[i].getDriveAppliedVolts());
+      double velocityMetersPerSec = Math.abs(modules[i].getVelocityMetersPerSec());
+      double errorMetersPerSec = Math.abs(velocityMetersPerSec - TEST_TARGET_METERS_PER_SEC);
+      boolean moduleOk =
+          modules[i].isDriveConnected()
+              && errorMetersPerSec <= TEST_VELOCITY_TOLERANCE_METERS_PER_SEC;
+
+      System.out.printf(
+          "  Drive module %d velocity: %s (target=%.2f m/s, measured=%.2f m/s,"
+              + " error=%.2f m/s, applied=%.2f V)%n",
+          i,
+          moduleOk ? "GOOD" : "BAD",
+          TEST_TARGET_METERS_PER_SEC,
+          velocityMetersPerSec,
+          errorMetersPerSec,
+          appliedVolts);
+      allGood = allGood && moduleOk;
+    }
+
+    System.out.println("Drive velocity overall: " + (allGood ? "GOOD" : "BAD"));
   }
 
   /** Returns the current odometry pose. */

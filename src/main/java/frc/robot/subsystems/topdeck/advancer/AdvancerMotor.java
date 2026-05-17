@@ -50,6 +50,10 @@ public class AdvancerMotor {
     return inputs.advancerSupplyCurrentAmps;
   }
 
+  public boolean isConnected() {
+    return inputs.advancerConnected;
+  }
+
   public void stop() {
     io.setAdvancerOpenLoop(0.0);
   }
