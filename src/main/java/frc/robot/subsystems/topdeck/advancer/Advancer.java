@@ -19,8 +19,8 @@ public class Advancer extends SubsystemBase {
   private static final double FF_START_DELAY_SECS = 1.0;
   private static final double FF_RAMP_RATE_VOLTS_PER_SEC = 0.25;
   private static final double FF_PRINT_PERIOD_SECS = 0.25;
-  private static final double TEST_TARGET_RPM = 1000.0;
-  private static final double TEST_RPM_TOLERANCE = 150.0;
+  private static final double TEST_MOVE_VOLTS = -12.0;
+  private static final double TEST_MIN_MOVEMENT_ROT = 0.1;
 
   private final AdvancerMotor talonAdvancer;
   private final AdvancerMotor neoAdvancer;
@@ -28,6 +28,9 @@ public class Advancer extends SubsystemBase {
   private final SysIdRoutine talonAdvancerSysId;
   private final SysIdRoutine neoAdvancerSysId;
   private final SysIdRoutine rollerSysId;
+  private double talonTestStartRot;
+  private double neoTestStartRot;
+  private double rollerTestStartRot;
 
   public Advancer(AdvancerIO talonAdvancerIO, AdvancerIO neoAdvancerIO, AdvancerIO rollerIO) {
     talonAdvancer = new AdvancerMotor(talonAdvancerIO, "talon");
@@ -179,26 +182,34 @@ public class Advancer extends SubsystemBase {
             Commands.runOnce(
                 () ->
                     System.out.printf(
-                        "Advancer velocity check: target=%.0f RPM, tolerance=+/-%.0f RPM%n",
-                        TEST_TARGET_RPM, TEST_RPM_TOLERANCE)),
-            Commands.run(() -> runTalonVelocity(TEST_TARGET_RPM), this).withTimeout(1.0),
-            Commands.runOnce(() -> printMotorResponseHealth("  Talon advancer", talonAdvancer)),
-            Commands.run(() -> runNeoVelocity(TEST_TARGET_RPM), this).withTimeout(1.0),
-            Commands.runOnce(() -> printMotorResponseHealth("  Neo advancer", neoAdvancer)),
-            Commands.run(() -> runRollerVelocity(TEST_TARGET_RPM), this).withTimeout(1.0),
-            Commands.runOnce(() -> printMotorResponseHealth("  Roller", roller)))
+                        "Advancer movement check: command=%.1f V, minimum=%.2f rotations%n",
+                        TEST_MOVE_VOLTS, TEST_MIN_MOVEMENT_ROT)),
+            Commands.runOnce(() -> talonTestStartRot = talonAdvancer.getPositionRot()),
+            Commands.run(() -> runTalonCharacterization(TEST_MOVE_VOLTS), this).withTimeout(0.75),
+            Commands.runOnce(
+                () ->
+                    printMotorMovementHealth("  Talon advancer", talonAdvancer, talonTestStartRot)),
+            Commands.runOnce(() -> neoTestStartRot = neoAdvancer.getPositionRot()),
+            Commands.run(() -> runNeoCharacterization(TEST_MOVE_VOLTS), this).withTimeout(0.75),
+            Commands.runOnce(
+                () -> printMotorMovementHealth("  Neo advancer", neoAdvancer, neoTestStartRot)),
+            Commands.runOnce(() -> rollerTestStartRot = roller.getPositionRot()),
+            Commands.run(() -> runRollerCharacterization(TEST_MOVE_VOLTS), this).withTimeout(0.75),
+            Commands.runOnce(
+                () -> printMotorMovementHealth("  Roller", roller, rollerTestStartRot)))
         .finallyDo(this::stopAdvancer);
   }
 
-  private static void printMotorResponseHealth(String name, AdvancerMotor motor) {
+  private static void printMotorMovementHealth(
+      String name, AdvancerMotor motor, double startPositionRot) {
     double appliedVolts = Math.abs(motor.getAppliedVolts());
-    double velocityRPM = Math.abs(motor.getVelocityRPM());
-    double errorRPM = Math.abs(velocityRPM - TEST_TARGET_RPM);
-    boolean good = motor.isConnected() && errorRPM <= TEST_RPM_TOLERANCE;
+    double positionRot = motor.getPositionRot();
+    double movementRot = Math.abs(positionRot - startPositionRot);
+    boolean good = motor.isConnected() && movementRot >= TEST_MIN_MOVEMENT_ROT;
 
     System.out.printf(
-        "%s velocity: %s (target=%.0f RPM, measured=%.0f RPM, error=%.0f RPM, applied=%.2f V)%n",
-        name, good ? "GOOD" : "BAD", TEST_TARGET_RPM, velocityRPM, errorRPM, appliedVolts);
+        "%s movement: %s (moved=%.2f rot, start=%.2f rot, end=%.2f rot, applied=%.2f V)%n",
+        name, good ? "GOOD" : "BAD", movementRot, startPositionRot, positionRot, appliedVolts);
   }
 
   private static void printMotorHealth(String name, boolean good) {

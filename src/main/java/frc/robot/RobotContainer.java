@@ -59,10 +59,9 @@ public class RobotContainer {
   private final Intake intake;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController controller = new CommandXboxController(2);
   private final Joystick operator = new Joystick(1);
-  private final Joystick driver = new Joystick(2);
-  private final Joystick turning = new Joystick(3);
+  private final Joystick driver = new Joystick(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;

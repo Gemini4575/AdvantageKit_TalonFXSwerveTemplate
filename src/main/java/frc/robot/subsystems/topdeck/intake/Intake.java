@@ -11,12 +11,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   private static final double TEST_ROTATOR_TOLERANCE_ROT = 2.0;
-  private static final double TEST_MIN_ROLLER_VELOCITY_RPM = 300.0;
+  private static final double TEST_MIN_ROLLER_MOVEMENT_ROT = 0.1;
 
   private final intakeIO rotatorIO;
   private final intakeIO rollerIO;
   private final intakeIOInputsAutoLogged rotatorInputs = new intakeIOInputsAutoLogged();
   private final intakeIOInputsAutoLogged rollerInputs = new intakeIOInputsAutoLogged();
+  private double rollerTestStartRot;
 
   public Intake(intakeIO rotatorIO, intakeIO rollerIO) {
     this.rotatorIO = rotatorIO;
@@ -105,6 +106,7 @@ public class Intake extends SubsystemBase {
                 () -> printRotatorPositionHealth("  Intake down", Intake_Down_SetPoint)),
             Commands.run(this::moveUpToStore, this).until(this::isRotatorNearUp).withTimeout(3.0),
             Commands.runOnce(() -> printRotatorPositionHealth("  Intake up", Intake_Up_SetPoint)),
+            Commands.runOnce(() -> rollerTestStartRot = rollerInputs.intakeKrakenPositionRot),
             Commands.run(this::intake, this).withTimeout(0.75),
             Commands.runOnce(this::printRollerResponseHealth))
         .finallyDo(this::stop);
@@ -132,12 +134,14 @@ public class Intake extends SubsystemBase {
 
   private void printRollerResponseHealth() {
     double appliedVolts = Math.abs(rollerInputs.intakeKrakenAppliedVolts);
-    double velocityRPM = Math.abs(rollerInputs.intakeKrakenVelocityRPM);
-    boolean good = rollerInputs.intakeConnected && velocityRPM >= TEST_MIN_ROLLER_VELOCITY_RPM;
+    double positionRot = rollerInputs.intakeKrakenPositionRot;
+    double movementRot = Math.abs(positionRot - rollerTestStartRot);
+    boolean good = rollerInputs.intakeConnected && movementRot >= TEST_MIN_ROLLER_MOVEMENT_ROT;
 
     System.out.printf(
-        "  Intake roller intake(): %s (minimum=%.0f RPM, measured=%.0f RPM, applied=%.2f V)%n",
-        good ? "GOOD" : "BAD", TEST_MIN_ROLLER_VELOCITY_RPM, velocityRPM, appliedVolts);
+        "  Intake roller movement: %s (moved=%.2f rot, start=%.2f rot, end=%.2f rot,"
+            + " applied=%.2f V)%n",
+        good ? "GOOD" : "BAD", movementRot, rollerTestStartRot, positionRot, appliedVolts);
   }
 
   private static void printMotorHealth(String name, boolean good) {

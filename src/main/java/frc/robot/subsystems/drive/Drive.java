@@ -67,6 +67,9 @@ public class Drive extends SubsystemBase {
   private static final double WHEEL_COF = 1.2;
   private static final double TEST_TARGET_METERS_PER_SEC = 1.0;
   private static final double TEST_VELOCITY_TOLERANCE_METERS_PER_SEC = 0.25;
+  private static final double TEST_TURN_DELTA_ROT = 0.25;
+  private static final double TEST_TURN_MIN_MOVEMENT_ROT = 0.08;
+  private static final double TEST_TURN_TOLERANCE_ROT = 0.06;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
@@ -99,6 +102,8 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  private final Rotation2d[] turnTestStartAngles = new Rotation2d[4];
+  private final Rotation2d[] turnTestTargetAngles = new Rotation2d[4];
 
   public Drive(
       GyroIO gyroIO,
@@ -125,7 +130,13 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            // ? Had Kp @ 0.12 it was ~1 inch off
+            // TODO 79 GOAL
+            // ! Kp @ 0.0875 = 83
+            // ! Kp @ 0.1 = 78 & 79 & 79.5
+            // ! Kp @ 0.12 = 78
+            // ! Kp @ 0.095 = 78.75 & 78.25
+            new PIDConstants(0.095, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -349,7 +360,10 @@ public class Drive extends SubsystemBase {
                     () -> runVelocity(new ChassisSpeeds(TEST_TARGET_METERS_PER_SEC, 0.0, 0.0)),
                     this)
                 .withTimeout(1.5),
-            Commands.runOnce(this::printMotorResponseHealth))
+            Commands.runOnce(this::printMotorResponseHealth),
+            Commands.runOnce(this::startTurnResponseTest),
+            Commands.run(this::runTurnResponseTest, this).withTimeout(1.5),
+            Commands.runOnce(this::printTurnResponseHealth))
         .finallyDo(this::stop);
   }
 
@@ -377,6 +391,47 @@ public class Drive extends SubsystemBase {
     }
 
     System.out.println("Drive velocity overall: " + (allGood ? "GOOD" : "BAD"));
+  }
+
+  private void startTurnResponseTest() {
+    System.out.printf(
+        "Drive wheel turn check: target movement=%.2f rotations, tolerance=+/-%.2f rotations%n",
+        TEST_TURN_DELTA_ROT, TEST_TURN_TOLERANCE_ROT);
+
+    for (int i = 0; i < modules.length; i++) {
+      turnTestStartAngles[i] = modules[i].getAngle();
+      turnTestTargetAngles[i] =
+          turnTestStartAngles[i].plus(Rotation2d.fromRotations(TEST_TURN_DELTA_ROT));
+    }
+  }
+
+  private void runTurnResponseTest() {
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].runTurnPosition(turnTestTargetAngles[i]);
+    }
+  }
+
+  private void printTurnResponseHealth() {
+    boolean allGood = true;
+
+    for (int i = 0; i < modules.length; i++) {
+      double movedRot =
+          Math.abs(modules[i].getAngle().minus(turnTestStartAngles[i]).getRotations());
+      double errorRot =
+          Math.abs(modules[i].getAngle().minus(turnTestTargetAngles[i]).getRotations());
+      boolean moduleOk =
+          modules[i].isTurnConnected()
+              && modules[i].isTurnEncoderConnected()
+              && movedRot >= TEST_TURN_MIN_MOVEMENT_ROT
+              && errorRot <= TEST_TURN_TOLERANCE_ROT;
+
+      System.out.printf(
+          "  Drive module %d turn: %s (moved=%.2f rot, error=%.2f rot)%n",
+          i, moduleOk ? "GOOD" : "BAD", movedRot, errorRot);
+      allGood = allGood && moduleOk;
+    }
+
+    System.out.println("Drive wheel turn overall: " + (allGood ? "GOOD" : "BAD"));
   }
 
   /** Returns the current odometry pose. */

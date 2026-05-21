@@ -88,6 +88,11 @@ public class Module {
     io.setTurnPosition(Rotation2d.kZero);
   }
 
+  public void runTurnPosition(Rotation2d rotation) {
+    io.setDriveOpenLoop(0.0);
+    io.setTurnPosition(rotation);
+  }
+
   /** Disables all outputs to motors. */
   public void stop() {
     io.setDriveOpenLoop(0.0);
@@ -97,6 +102,10 @@ public class Module {
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
     return inputs.turnPosition;
+  }
+
+  public double getTurnPositionRot() {
+    return inputs.turnPosition.getRotations();
   }
 
   /** Returns the current drive position of the module in meters. */
