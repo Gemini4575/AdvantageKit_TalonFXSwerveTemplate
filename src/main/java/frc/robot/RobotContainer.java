@@ -140,16 +140,15 @@ public class RobotContainer {
         break;
     }
     // Set up auto routines after named commands are registered.
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     NamedCommands.registerCommand(
-        "Shoot From The Hub Auto",
-        Commands.deadline(new ShootFromHubAuton(shooter, advancer), new IntakeOn(intake)));
+        "Shoot From The Hub Auto", new ShootFromHubAuton(shooter, advancer).withTimeout(5));
     NamedCommands.registerCommand(
-        "Shoot From The Hub",
-        new ShootFromHubAutoButActualy(shooter, advancer).alongWith(new IntakeOn(intake)));
+        "Shoot From The Hub", new ShootFromHubAutoButActualy(shooter, advancer).withTimeout(5));
     new EventTrigger("Off The Bump").onTrue(new IntakeDown(intake));
     new EventTrigger("Intake On").onTrue(new IntakeOn(intake).alongWith(new IntakeOnAuto()));
     new EventTrigger("Intake Off").onTrue(new IntakeOffAuton().alongWith(new IntakeOff(intake)));
+    new EventTrigger("Shoot").whileTrue(new ShootFromHubTele(shooter, advancer));
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Configure the button bindings
     configureButtonBindings();
@@ -207,7 +206,7 @@ public class RobotContainer {
   }
 
   public void printSubsystemHealth() {
-    System.out.println("========== Subsystem Health Check ==========");
+    System.out.println("========== Subsystem Health Check   `=====");
     boolean driveOk = drive.printHealth();
     boolean shooterOk = shooter.printHealth();
     boolean advancerOk = advancer.printHealth();

@@ -110,7 +110,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.99087136929461,
+      "waypointRelativePos": 1.4968017057569245,
       "rotationDegrees": 0.0
     },
     {
@@ -140,7 +140,7 @@
         "y": 4.319
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 1.35,
+      "minWaypointRelativePos": 1.701553004726521,
       "maxWaypointRelativePos": 2.6625310173697416,
       "name": "Point Towards Zone"
     }

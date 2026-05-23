@@ -15,6 +15,7 @@ public class ShootFromHubAutoButActualy extends Command {
   public ShootFromHubAutoButActualy(Shooter s, Advancer a) {
     this.shooter = s;
     this.advancer = a;
+    addRequirements(a, s);
   }
 
   @Override
