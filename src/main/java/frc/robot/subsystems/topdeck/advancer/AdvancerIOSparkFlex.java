@@ -40,7 +40,7 @@ public class AdvancerIOSparkFlex implements AdvancerIO {
     var rollerConfig = new SparkFlexConfig();
     rollerConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(30, 30)
+        .smartCurrentLimit(75, 75)
         .voltageCompensation(12)
         .inverted(ROLLER_MOTOR_INVERTED)
         .disableFollowerMode();

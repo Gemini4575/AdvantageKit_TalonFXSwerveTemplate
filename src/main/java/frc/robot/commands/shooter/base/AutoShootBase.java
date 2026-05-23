@@ -7,7 +7,7 @@ import frc.robot.subsystems.topdeck.shooter.Shooter;
 
 public class AutoShootBase extends Command {
   private final Shooter s;
-  public int Velocity = 6784;
+  public int Velocity = 0000;
   private final Advancer sadfd;
   private Timer timer = new Timer();
 
@@ -20,6 +20,7 @@ public class AutoShootBase extends Command {
 
   @Override
   public void initialize() {
+    System.out.println("Shoot from hub auto started");
     timer.reset();
     timer.start();
   }
@@ -37,6 +38,7 @@ public class AutoShootBase extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    System.out.println("Shoot from hub auto ended, interrupted=" + interrupted);
     s.stop();
     sadfd.stopAdvancer();
   }

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.States;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -30,6 +31,10 @@ public class Intake extends SubsystemBase {
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs("Intake/Rotator", rotatorInputs);
     Logger.processInputs("Intake/Rollers", rollerInputs);
+
+    if (States.INTAKE_ON_AUTON && DriverStation.isAutonomous()) {
+      intake();
+    }
 
     if (DriverStation.isDisabled()) {
       stop();

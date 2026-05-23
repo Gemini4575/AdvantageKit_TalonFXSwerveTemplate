@@ -103,5 +103,6 @@ public final class Constants {
     public static Boolean CLIMBER_DOWN = false;
     public static Boolean ADVANCER_ON = false;
     public static Boolean INTAKE_IN = true;
+    public static Boolean INTAKE_ON_AUTON = false;
   }
 }
