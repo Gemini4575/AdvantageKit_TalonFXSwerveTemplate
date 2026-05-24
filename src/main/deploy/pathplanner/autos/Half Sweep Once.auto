@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Full Sweep Depot"
+            "pathName": "Half Sweep Depot"
           }
         },
         {
@@ -18,12 +18,6 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot From The Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
                 }
               }
             ]
@@ -38,13 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Full Sweep Depot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot From The Hub"
+            "pathName": "Half Sweep Depot"
           }
         },
         {
@@ -55,12 +43,6 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot From The Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
                 }
               }
             ]
