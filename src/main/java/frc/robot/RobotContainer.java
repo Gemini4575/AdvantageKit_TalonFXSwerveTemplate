@@ -26,6 +26,7 @@ import frc.robot.commands.intake.IntakeOff;
 import frc.robot.commands.intake.IntakeOffAuton;
 import frc.robot.commands.intake.IntakeOn;
 import frc.robot.commands.intake.IntakeOnAuto;
+import frc.robot.commands.intake.IntakeUp;
 import frc.robot.commands.shooter.ShootFromHubAutoButActualy;
 import frc.robot.commands.shooter.ShootFromHubAuton;
 import frc.robot.commands.shooter.ShootFromHubTele;
@@ -148,6 +149,7 @@ public class RobotContainer {
     new EventTrigger("Intake On").onTrue(new IntakeOn(intake).alongWith(new IntakeOnAuto()));
     new EventTrigger("Intake Off").onTrue(new IntakeOffAuton().alongWith(new IntakeOff(intake)));
     new EventTrigger("Shoot").whileTrue(new ShootFromHubTele(shooter, advancer));
+    new EventTrigger("Intake Up").onTrue(new IntakeUp(intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Configure the button bindings
