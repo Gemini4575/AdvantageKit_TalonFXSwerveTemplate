@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Half Sweep Outpost"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot From The Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to Start Sweep Outpost"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Half Sweep Outpost"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot From The Hub"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Outpost",
+  "choreoAuto": false
+}

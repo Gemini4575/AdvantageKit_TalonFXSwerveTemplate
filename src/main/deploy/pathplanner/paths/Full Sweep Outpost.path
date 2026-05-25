@@ -3,77 +3,77 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.534450784593438,
-        "y": 5.956390870185448
+        "x": 3.5473894436519258,
+        "y": 2.126547788873039
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.534450784593438,
-        "y": 5.956390870185448
+        "x": 4.547389443651927,
+        "y": 2.126547788873039
       },
       "isLocked": false,
-      "linkedName": "Sweep Bump Start Depot"
+      "linkedName": "Sweep Bump Start Outpost"
     },
     {
       "anchor": {
-        "x": 6.199814550641939,
-        "y": 5.956390870185448
+        "x": 6.139096385542168,
+        "y": 2.126547788873039
       },
       "prevControl": {
-        "x": 5.151703301681693,
-        "y": 5.956390870185448
+        "x": 5.438104368054797,
+        "y": 2.126547788873039
       },
       "nextControl": {
-        "x": 6.945072576880179,
-        "y": 5.956390870185448
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.739514978601996,
-        "y": 5.788188302425108
-      },
-      "prevControl": {
-        "x": 7.5066191155492135,
-        "y": 6.551569186875891
-      },
-      "nextControl": {
-        "x": 7.959473282734604,
-        "y": 5.067213861101561
+        "x": 6.886836332290646,
+        "y": 2.126547788873039
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.74,
-        "y": 2.748
+        "x": 7.450421686746989,
+        "y": 2.126547788873039
       },
       "prevControl": {
-        "x": 7.778815977175466,
-        "y": 4.145375178316691
+        "x": 6.515607629112626,
+        "y": 2.126547788873039
       },
       "nextControl": {
-        "x": 7.701271177406891,
-        "y": 1.3537623866481487
+        "x": 8.987068131861221,
+        "y": 2.126547788873039
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.695206847360912,
-        "y": 2.230057061340942
+        "x": 7.603409638554217,
+        "y": 6.111265060240965
       },
       "prevControl": {
-        "x": 7.198700929224714,
-        "y": 2.2162635376541187
+        "x": 8.492808472075488,
+        "y": 6.1342667542113425
       },
       "nextControl": {
-        "x": 4.284893009985734,
-        "y": 2.2429957203994295
+        "x": 6.33579518072289,
+        "y": 6.078481927710844
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.139096385542168,
+        "y": 5.619518072289156
+      },
+      "prevControl": {
+        "x": 7.11166265060241,
+        "y": 5.608590361445783
+      },
+      "nextControl": {
+        "x": 4.486463324822286,
+        "y": 5.6380869830837606
       },
       "isLocked": false,
       "linkedName": null
@@ -81,15 +81,15 @@
     {
       "anchor": {
         "x": 3.2498002853067045,
-        "y": 2.230057061340942
+        "y": 5.619518072289156
       },
       "prevControl": {
-        "x": 3.8449786019971457,
-        "y": 2.230057061340942
+        "x": 4.073759036139129,
+        "y": 5.641373493975904
       },
       "nextControl": {
-        "x": 2.6299359321691584,
-        "y": 2.230057061340942
+        "x": 2.3500044820610744,
+        "y": 5.595651080534979
       },
       "isLocked": false,
       "linkedName": null
@@ -100,8 +100,8 @@
         "y": 4.041469329529244
       },
       "prevControl": {
-        "x": 2.2498002853067045,
-        "y": 4.041469329529244
+        "x": 2.052132530120482,
+        "y": 4.045927710843373
       },
       "nextControl": null,
       "isLocked": false,
@@ -110,11 +110,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9339019189765504,
+      "waypointRelativePos": 0.9610136452241715,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 3.927505330490418,
+      "waypointRelativePos": 4.0912280701754264,
       "rotationDegrees": 0.0
     }
   ],
@@ -122,31 +122,31 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 7.74,
-        "y": 2.2
+        "x": 8.2,
+        "y": 5.98
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 1.4746792707630023,
-      "maxWaypointRelativePos": 3.0627954085077627,
+      "minWaypointRelativePos": 2.082027649769595,
+      "maxWaypointRelativePos": 2.6903225806451645,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
     {
       "name": "Off The Bump",
-      "waypointRelativePos": 0.7454422687373495,
+      "waypointRelativePos": 0.6843317972350191,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "Intake On",
-      "waypointRelativePos": 1.5232950708980562,
+      "waypointRelativePos": 2.0,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "Intake Off",
-      "waypointRelativePos": 3.5165428764348343,
+      "waypointRelativePos": 4.052995391705078,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -164,7 +164,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Depot",
+  "folder": "Outpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

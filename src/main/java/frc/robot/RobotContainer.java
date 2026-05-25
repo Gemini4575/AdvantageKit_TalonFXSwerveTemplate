@@ -9,10 +9,13 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -54,6 +57,8 @@ import frc.robot.subsystems.topdeck.shooter.Shooter;
 import frc.robot.subsystems.topdeck.shooter.ShooterColumIO;
 import frc.robot.subsystems.topdeck.shooter.ShooterColumIOSim;
 import frc.robot.subsystems.topdeck.shooter.ShooterColumIOSpark;
+import java.util.ArrayList;
+import java.util.List;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -78,6 +83,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   private Field2d m_field = new Field2d();
+  private String lastPreviewedAuto = "";
+  private boolean lastPreviewWasFlipped = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -155,28 +162,30 @@ public class RobotContainer {
     new EventTrigger("Shoot").whileTrue(new ShootFromHubTele(shooter, advancer));
     new EventTrigger("Intake Up").onTrue(new IntakeUp(intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    updateAutoPreview();
 
     // Configure the button bindings
     configureButtonBindings();
 
     // Logging callback for current robot pose
-        PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-            // Do whatever you want with the pose here
-            m_field.setRobotPose(pose);
+    PathPlannerLogging.setLogCurrentPoseCallback(
+        (pose) -> {
+          // Do whatever you want with the pose here
+          m_field.setRobotPose(pose);
         });
 
-        
-
-        // Logging callback for target robot pose
-        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-            // Do whatever you want with the pose here
-            m_field.getObject("target pose").setPose(pose);
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (pose) -> {
+          // Do whatever you want with the pose here
+          m_field.getObject("target pose").setPose(pose);
         });
 
-        // Logging callback for the active path, this is sent as a list of poses
-        PathPlannerLogging.setLogActivePathCallback((poses) -> {
-            // Do whatever you want with the poses here
-            m_field.getObject("path").setPoses(poses);
+    // Logging callback for the active path, this is sent as a list of poses
+    PathPlannerLogging.setLogActivePathCallback(
+        (poses) -> {
+          // Do whatever you want with the poses here
+          m_field.getObject("path").setPoses(poses);
         });
   }
 
@@ -229,6 +238,38 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void updateAutoPreview() {
+    String selectedAuto = autoChooser.getSendableChooser().getSelected();
+    boolean shouldFlip = AutoBuilder.shouldFlip();
+
+    if (selectedAuto == null || selectedAuto.equals("None")) {
+      m_field.getObject("path").setPoses(List.of());
+      lastPreviewedAuto = "";
+      lastPreviewWasFlipped = shouldFlip;
+      return;
+    }
+
+    if (selectedAuto.equals(lastPreviewedAuto) && shouldFlip == lastPreviewWasFlipped) {
+      return;
+    }
+
+    try {
+      List<Pose2d> previewPoses = new ArrayList<>();
+      for (PathPlannerPath path : PathPlannerAuto.getPathGroupFromAutoFile(selectedAuto)) {
+        PathPlannerPath previewPath = shouldFlip && !path.preventFlipping ? path.flipPath() : path;
+        previewPoses.addAll(previewPath.getPathPoses());
+      }
+
+      m_field.getObject("path").setPoses(previewPoses);
+      lastPreviewedAuto = selectedAuto;
+      lastPreviewWasFlipped = shouldFlip;
+    } catch (Exception exception) {
+      DriverStation.reportWarning(
+          "Unable to preview selected auto path '" + selectedAuto + "': " + exception.getMessage(),
+          false);
+    }
   }
 
   public Field2d getPath() {

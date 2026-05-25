@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test Bump"
+            "pathName": "Half Sweep Outpost"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot From The Hub"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": "Outpost",
   "choreoAuto": false
 }

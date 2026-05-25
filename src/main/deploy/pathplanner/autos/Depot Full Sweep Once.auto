@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test Bump"
+            "pathName": "Full Sweep Depot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot From The Hub"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": "Depot",
   "choreoAuto": false
 }

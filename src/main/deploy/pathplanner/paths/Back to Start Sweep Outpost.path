@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5,
-        "y": 5.4993132530120485
+        "x": 3.2498002853067045,
+        "y": 4.041469329529244
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5,
-        "y": 5.4993132530120485
+        "x": 3.2887392252019185,
+        "y": 3.794520430038202
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SweepBumpEnd"
     },
     {
       "anchor": {
-        "x": 7.0,
-        "y": 5.499
+        "x": 3.5473894436519258,
+        "y": 2.126547788873039
       },
       "prevControl": {
-        "x": 6.0,
-        "y": 5.499
+        "x": 3.5089557337825177,
+        "y": 2.37357582360933
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Sweep Bump Start Outpost"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Testing",
+  "folder": "Back To Start",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
