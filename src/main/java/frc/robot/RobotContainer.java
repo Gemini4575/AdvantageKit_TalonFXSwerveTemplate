@@ -18,8 +18,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -68,6 +70,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private static final double PREVIEW_ANIMATION_SPEED_METERS_PER_SEC = 2.0;
+
   // Subsystems
   private final Drive drive;
   private final Shooter shooter;
@@ -85,6 +89,8 @@ public class RobotContainer {
   private Field2d m_field = new Field2d();
   private String lastPreviewedAuto = "";
   private boolean lastPreviewWasFlipped = false;
+  private List<Pose2d> previewPoses = List.of();
+  private double previewAnimationStartTime = 0.0;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -162,6 +168,7 @@ public class RobotContainer {
     new EventTrigger("Shoot").whileTrue(new ShootFromHubTele(shooter, advancer));
     new EventTrigger("Intake Up").onTrue(new IntakeUp(intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    configureElasticDashboard();
     updateAutoPreview();
 
     // Configure the button bindings
@@ -240,12 +247,18 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  private void configureElasticDashboard() {
+    SmartDashboard.putData("Auto Choices", autoChooser.getSendableChooser());
+    SmartDashboard.putData("Auto Preview", m_field);
+  }
+
   public void updateAutoPreview() {
     String selectedAuto = autoChooser.getSendableChooser().getSelected();
     boolean shouldFlip = AutoBuilder.shouldFlip();
 
     if (selectedAuto == null || selectedAuto.equals("None")) {
       m_field.getObject("path").setPoses(List.of());
+      previewPoses = List.of();
       lastPreviewedAuto = "";
       lastPreviewWasFlipped = shouldFlip;
       return;
@@ -263,6 +276,11 @@ public class RobotContainer {
       }
 
       m_field.getObject("path").setPoses(previewPoses);
+      if (!previewPoses.isEmpty()) {
+        m_field.setRobotPose(previewPoses.get(0));
+      }
+      this.previewPoses = List.copyOf(previewPoses);
+      previewAnimationStartTime = Timer.getFPGATimestamp();
       lastPreviewedAuto = selectedAuto;
       lastPreviewWasFlipped = shouldFlip;
     } catch (Exception exception) {
@@ -270,6 +288,60 @@ public class RobotContainer {
           "Unable to preview selected auto path '" + selectedAuto + "': " + exception.getMessage(),
           false);
     }
+  }
+
+  public void updateAutoPreviewAnimation() {
+    if (previewPoses.isEmpty()) {
+      return;
+    }
+
+    double totalDistance = getPreviewDistance();
+    if (totalDistance <= 0.0) {
+      m_field.setRobotPose(previewPoses.get(0));
+      return;
+    }
+
+    double elapsedTime = Timer.getFPGATimestamp() - previewAnimationStartTime;
+    double previewDistance = (elapsedTime * PREVIEW_ANIMATION_SPEED_METERS_PER_SEC) % totalDistance;
+
+    m_field.setRobotPose(samplePreviewPose(previewDistance));
+  }
+
+  private double getPreviewDistance() {
+    double distance = 0.0;
+    for (int i = 1; i < previewPoses.size(); i++) {
+      distance +=
+          previewPoses
+              .get(i - 1)
+              .getTranslation()
+              .getDistance(previewPoses.get(i).getTranslation());
+    }
+    return distance;
+  }
+
+  private Pose2d samplePreviewPose(double previewDistance) {
+    double traversedDistance = 0.0;
+
+    for (int i = 1; i < previewPoses.size(); i++) {
+      Pose2d startPose = previewPoses.get(i - 1);
+      Pose2d endPose = previewPoses.get(i);
+      double segmentDistance = startPose.getTranslation().getDistance(endPose.getTranslation());
+
+      if (segmentDistance <= 0.0) {
+        continue;
+      }
+
+      if (traversedDistance + segmentDistance >= previewDistance) {
+        double interpolation = (previewDistance - traversedDistance) / segmentDistance;
+        return new Pose2d(
+            startPose.getTranslation().interpolate(endPose.getTranslation(), interpolation),
+            endPose.getTranslation().minus(startPose.getTranslation()).getAngle());
+      }
+
+      traversedDistance += segmentDistance;
+    }
+
+    return previewPoses.get(previewPoses.size() - 1);
   }
 
   public Field2d getPath() {

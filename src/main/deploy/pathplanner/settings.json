@@ -3,9 +3,10 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Depot",
-    "Outpost",
     "Back To Start",
+    "Depot",
+    "2nd Pass",
+    "Outpost",
     "Testing"
   ],
   "autoFolders": [

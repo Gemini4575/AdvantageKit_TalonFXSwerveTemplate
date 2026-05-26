@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -68,7 +67,7 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our autonomous chooser on the dashboard.
+    // and publish dashboard data for Elastic.
     robotContainer = new RobotContainer();
   }
 
@@ -86,8 +85,6 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putData("Field", robotContainer.getPath());
-
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
   }
@@ -100,6 +97,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     robotContainer.updateAutoPreview();
+    robotContainer.updateAutoPreviewAnimation();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
