@@ -14,6 +14,11 @@ public class IntakeDown extends Command {
   }
 
   @Override
+  public void initialize() {
+    isFinished = false;
+  }
+
+  @Override
   public void execute() {
     if (i.moveDownToIntake()) {
       isFinished = true;

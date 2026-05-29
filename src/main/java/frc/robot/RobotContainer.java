@@ -33,6 +33,7 @@ import frc.robot.commands.intake.IntakeOff;
 import frc.robot.commands.intake.IntakeOffAuton;
 import frc.robot.commands.intake.IntakeOn;
 import frc.robot.commands.intake.IntakeOnAuto;
+import frc.robot.commands.intake.IntakeStopMovingAuto;
 import frc.robot.commands.intake.IntakeUp;
 import frc.robot.commands.shooter.ShootFromHubAutoButActualy;
 import frc.robot.commands.shooter.ShootFromHubAuton;
@@ -161,11 +162,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Shoot From The Hub Auto", new ShootFromHubAuton(shooter, advancer).withTimeout(5));
     NamedCommands.registerCommand(
-        "Shoot From The Hub", new ShootFromHubAutoButActualy(shooter, advancer).withTimeout(5));
-    new EventTrigger("Off The Bump").onTrue(new IntakeDown(intake));
-    new EventTrigger("Intake On").onTrue(new IntakeOn(intake).alongWith(new IntakeOnAuto()));
+        "Shoot From The Hub", new ShootFromHubAutoButActualy(shooter, advancer).withTimeout(3));
+    new EventTrigger("Intake On")
+        .whileTrue(new IntakeOnAuto().alongWith(new IntakeOn(intake)))
+        .onTrue(new IntakeDown(intake));
     new EventTrigger("Intake Off").onTrue(new IntakeOffAuton().alongWith(new IntakeOff(intake)));
-    new EventTrigger("Shoot").whileTrue(new ShootFromHubTele(shooter, advancer));
+    new EventTrigger("Intake Stop Moving").whileTrue(new IntakeStopMovingAuto(intake).asProxy());
     new EventTrigger("Intake Up").onTrue(new IntakeUp(intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     configureElasticDashboard();
