@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.2498002853067045,
-        "y": 4.041469329529244
+        "y": 4.00265335235378
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.2865293051824307,
-        "y": 4.288756569594251
+        "y": 4.249940592418787
       },
       "isLocked": false,
       "linkedName": "SweepBumpEnd"

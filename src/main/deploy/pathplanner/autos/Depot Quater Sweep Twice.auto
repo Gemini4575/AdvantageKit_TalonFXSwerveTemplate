@@ -19,12 +19,6 @@
                 "data": {
                   "name": "Shoot From The Hub"
                 }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
               }
             ]
           }
@@ -49,12 +43,6 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot From The Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
                 }
               }
             ]

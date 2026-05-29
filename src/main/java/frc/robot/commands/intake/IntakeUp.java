@@ -14,6 +14,11 @@ public class IntakeUp extends Command {
   }
 
   @Override
+  public void initialize() {
+    isFinished = false;
+  }
+
+  @Override
   public void execute() {
     if (i.moveUpToStore()) {
       isFinished = true;
