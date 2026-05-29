@@ -151,6 +151,18 @@ public class DriveCommands {
   }
 
   /**
+   * Field relative drive command that captures a heading offset from the robot's current heading
+   * when the command starts.
+   */
+  public static Command joystickDriveAtRelativeAngle(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Rotation2d rotationOffset) {
+    Rotation2d[] targetRotation = new Rotation2d[] {Rotation2d.kZero};
+
+    return joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> targetRotation[0])
+        .beforeStarting(() -> targetRotation[0] = drive.getRotation().plus(rotationOffset));
+  }
+
+  /**
    * Measures the velocity feedforward constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.

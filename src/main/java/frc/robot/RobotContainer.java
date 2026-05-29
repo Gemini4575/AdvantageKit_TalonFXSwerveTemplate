@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.intake.ExtendOrRectactIntake;
 import frc.robot.commands.intake.IntakeDown;
@@ -71,6 +72,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   private static final double PREVIEW_ANIMATION_SPEED_METERS_PER_SEC = 2.0;
+  private static final double SLOW_DRIVE_SCALE = 0.5;
 
   // Subsystems
   private final Drive drive;
@@ -208,6 +210,14 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive, () -> driver.getY(), () -> driver.getX(), () -> -driver.getTwist()));
 
+    new Trigger(() -> driver.getPOV() == 0)
+        .whileTrue(
+            DriveCommands.joystickDrive(
+                drive,
+                () -> driver.getY() * SLOW_DRIVE_SCALE,
+                () -> driver.getX() * SLOW_DRIVE_SCALE,
+                () -> -driver.getTwist() * SLOW_DRIVE_SCALE));
+
     // Lock to 0° when A button is held
     controller
         .a()
@@ -227,6 +237,21 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                 drive));
+
+    new JoystickButton(driver, 7)
+        .whileTrue(
+            DriveCommands.joystickDriveAtRelativeAngle(
+                drive, () -> driver.getY(), () -> driver.getX(), Rotation2d.fromDegrees(90.0)));
+
+    new JoystickButton(driver, 12)
+        .whileTrue(
+            DriveCommands.joystickDriveAtRelativeAngle(
+                drive, () -> driver.getY(), () -> driver.getX(), Rotation2d.fromDegrees(180.0)));
+
+    new JoystickButton(driver, 8)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive, () -> driver.getY(), () -> driver.getX(), () -> Rotation2d.kZero));
 
     new JoystickButton(operator, 11).whileTrue(new ShootFromHubTele(shooter, advancer));
 
