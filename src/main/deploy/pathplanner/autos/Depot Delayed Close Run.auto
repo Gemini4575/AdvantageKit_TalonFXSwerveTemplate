@@ -7,13 +7,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 5.0
+            "waitTime": 10.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Delayed Close Run Depot"
+            "pathName": "Closer 2nd Run"
           }
         },
         {

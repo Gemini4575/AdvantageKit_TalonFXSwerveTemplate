@@ -4,30 +4,37 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.topdeck.advancer.Advancer;
 import frc.robot.subsystems.topdeck.shooter.Shooter;
+import java.util.function.DoubleSupplier;
 
 public class TelopShootBase extends Command {
   private final Shooter s;
-  public int Velocity = 0000;
+  private final DoubleSupplier velocitySupplier;
   private final Advancer sadfd;
   private Timer timer = new Timer();
+  private boolean firstTime = false;
 
-  public TelopShootBase(Shooter a, Advancer ds, int velocity) {
+  public TelopShootBase(Shooter a, Advancer ds, DoubleSupplier velocitySupplier) {
     s = a;
     sadfd = ds;
-    Velocity = velocity;
+    this.velocitySupplier = velocitySupplier;
     addRequirements(a, ds);
   }
 
   @Override
   public void initialize() {
+    firstTime = false;
     timer.reset();
     timer.start();
   }
 
   @Override
   public void execute() {
-    s.runVelocity(Velocity);
-    sadfd.advance();
+    double velocity = velocitySupplier.getAsDouble();
+    s.runVelocity(velocity);
+    if (s.getAverageRPM() > velocity - 100 || firstTime) {
+      firstTime = true;
+      sadfd.advance();
+    }
   }
 
   @Override
@@ -37,6 +44,7 @@ public class TelopShootBase extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    firstTime = false;
     s.stop();
     sadfd.stopAdvancer();
   }

@@ -75,6 +75,18 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  public double getAverageRPM() {
+    double totalRPM = 0.0;
+    int count = 0;
+    for (int i = 0; i < shooterColums.length; i++) {
+      if (shooterColums[i].isConnected()) {
+        totalRPM += shooterColums[i].getVelocityRPM();
+        count++;
+      }
+    }
+    return count > 0 ? totalRPM / count : 0.0;
+  }
+
   public boolean printHealth() {
     boolean allGood = true;
 

@@ -172,6 +172,7 @@ public class RobotContainer {
     new EventTrigger("Intake Stop Moving").whileTrue(new IntakeStopMovingAuto(intake).asProxy());
     new EventTrigger("Intake Up").onTrue(new IntakeUp(intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser.addOption("Just Shoot", new ShootFromHubTele(shooter, advancer, () -> 2700));
     configureElasticDashboard();
     updateAutoPreview();
 
@@ -210,7 +211,7 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> driver.getY(), () -> driver.getX(), () -> -driver.getTwist()));
+            drive, () -> -driver.getY(), () -> -driver.getX(), () -> -driver.getTwist()));
 
     new Trigger(() -> driver.getPOV() == 0)
         .whileTrue(
@@ -231,7 +232,7 @@ public class RobotContainer {
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    new JoystickButton(driver, 8).onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     new JoystickButton(driver, 6)
@@ -255,7 +256,14 @@ public class RobotContainer {
             DriveCommands.joystickDriveAtAngle(
                 drive, () -> driver.getY(), () -> driver.getX(), () -> Rotation2d.kZero));
 
-    new JoystickButton(operator, 11).whileTrue(new ShootFromHubTele(shooter, advancer));
+    new JoystickButton(operator, 11)
+        .whileTrue(
+            new ShootFromHubTele(
+                shooter,
+                advancer,
+                () ->
+                    SmartDashboard.getNumber(
+                        "Teleop Shoot Velocity", Constants.ShooterRPMConstants.HUB_SHOT)));
 
     intake.setDefaultCommand(
         new ExtendOrRectactIntake(
@@ -277,6 +285,7 @@ public class RobotContainer {
   private void configureElasticDashboard() {
     SmartDashboard.putData("Auto Choices", autoChooser.getSendableChooser());
     SmartDashboard.putData("Auto Preview", m_field);
+    SmartDashboard.putNumber("Teleop Shoot Velocity", Constants.ShooterRPMConstants.HUB_SHOT);
   }
 
   public void updateAutoPreview() {

@@ -61,8 +61,9 @@ public final class Constants {
     public static final int BOTTOM_INTAKE_MOTOR_ID = 4;
     public static final int INTAKE_ROTATOR_CAN_ID = 5;
     public static final double INTAKE_SPEED = 1.0;
-    public static final double Intake_Down_SetPoint = 24.5;
-    public static final double Intake_Up_SetPoint = 2;
+    public static final double Intake_Hold_KP = 0.08;
+    public static final double Intake_Down_SetPoint = 24.0;
+    public static final double Intake_Up_SetPoint = 5;
   }
 
   public static final class ShooterConstants {
@@ -91,7 +92,7 @@ public final class Constants {
   }
 
   public static final class ShooterRPMConstants {
-    public static final int HUB_SHOT = 3050;
+    public static final int HUB_SHOT = 2700;
     public static final int LADDER_SHOT = 4200;
     public static final int TRENCH_SHOT = 4000;
     public static final int ALLIANCE_WALL_SHOT = 5895;

@@ -26,6 +26,8 @@ public class IntakeIOSpark implements intakeIO {
         .inverted(true);
     rotatorConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
     rotatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+    rotatorConfig.softLimit.reverseSoftLimit(Intake_Up_SetPoint);
+    rotatorConfig.softLimit.forwardSoftLimit(Intake_Down_SetPoint);
 
     rotatorConfig
         .signals
