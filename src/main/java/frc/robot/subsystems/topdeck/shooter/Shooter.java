@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Sets the shooter velocity in RPM based off of voltage.
+   * Sets the shooter velocity in RPM.
    *
    * @param velocity Velocity in RPM
    */

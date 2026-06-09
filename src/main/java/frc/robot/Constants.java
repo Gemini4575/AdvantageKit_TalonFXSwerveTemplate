@@ -89,10 +89,14 @@ public final class Constants {
     public static final double KS1 = 0.087923;
     public static final double KS2 = 0.058578;
     public static final double KS3 = 0.037203;
+
+    public static final double SHOOTER_KP = 0.00018;
+    public static final double SHOOTER_KI = 0.0;
+    public static final double SHOOTER_KD = 0.0;
   }
 
   public static final class ShooterRPMConstants {
-    public static final int HUB_SHOT = 2700;
+    public static final int HUB_SHOT = 2500;
     public static final int LADDER_SHOT = 4200;
     public static final int TRENCH_SHOT = 4000;
     public static final int ALLIANCE_WALL_SHOT = 5895;

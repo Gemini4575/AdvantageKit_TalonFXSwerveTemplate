@@ -12,6 +12,8 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import frc.robot.subsystems.drive.SparkOdometryThread;
@@ -22,12 +24,15 @@ public class ShooterColumIOSpark implements ShooterColumIO {
   private final SparkFlex shooterMotor;
   private final RelativeEncoder shooterEncoder;
   private final SimpleMotorFeedforward shooterFeedforward;
+  private final PIDController shooterController;
   private final boolean shooterInverted;
   private final double ka;
   private final double kv;
   private final double ks;
 
+  private boolean shooterClosedLoop = false;
   private double shooterFeedforwardVoltage = 0.0;
+  private double shooterAppliedVolts = 0.0;
 
   // Queue inputs from odometry thread
   private final Queue<Double> timestampQueue;
@@ -83,6 +88,7 @@ public class ShooterColumIOSpark implements ShooterColumIO {
         };
     shooterEncoder = shooterMotor.getEncoder();
     shooterFeedforward = new SimpleMotorFeedforward(ks, kv, ka);
+    shooterController = new PIDController(SHOOTER_KP, SHOOTER_KI, SHOOTER_KD);
     // Configure shooter motor
     var shooterConfig = new SparkFlexConfig();
     shooterConfig
@@ -126,7 +132,15 @@ public class ShooterColumIOSpark implements ShooterColumIO {
     ifOk(
         shooterMotor,
         shooterEncoder::getVelocity,
-        (value) -> inputs.shooterVelocityRotPerSec = value);
+        (value) -> {
+          inputs.shooterVelocityRotPerSec = value;
+          if (shooterClosedLoop) {
+            shooterAppliedVolts =
+                MathUtil.clamp(
+                    shooterFeedforwardVoltage + shooterController.calculate(value), -12.0, 12.0);
+            shooterMotor.setVoltage(shooterAppliedVolts);
+          }
+        });
     ifOk(
         shooterMotor,
         new DoubleSupplier[] {shooterMotor::getAppliedOutput, shooterMotor::getBusVoltage},
@@ -150,12 +164,16 @@ public class ShooterColumIOSpark implements ShooterColumIO {
 
   @Override
   public void setShooterOpenLoop(double output) {
+    shooterClosedLoop = false;
+    shooterController.reset();
     shooterMotor.setVoltage(output);
   }
 
   @Override
   public void setShooterVelocity(double velocityRotationsPerMin) {
-    shooterFeedforwardVoltage = shooterFeedforward.calculate(velocityRotationsPerMin / 60);
-    setShooterOpenLoop(shooterFeedforwardVoltage);
+    shooterClosedLoop = true;
+    shooterController.reset();
+    shooterFeedforwardVoltage = shooterFeedforward.calculate(velocityRotationsPerMin / 60.0);
+    shooterController.setSetpoint(velocityRotationsPerMin);
   }
 }

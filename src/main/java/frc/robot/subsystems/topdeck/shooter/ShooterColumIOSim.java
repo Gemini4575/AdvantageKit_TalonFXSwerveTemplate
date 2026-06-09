@@ -15,8 +15,8 @@ public class ShooterColumIOSim implements ShooterColumIO {
   private static final DCMotor shooterGearbox = DCMotor.getNEO(1);
   private static final double shooterMOI = 0.004;
   private static final double shooterReduction = 1.0;
-  private static final double shooterSimP = 0.01;
-  private static final double shooterSimD = 0.0;
+  private static final double shooterSimP = SHOOTER_KP;
+  private static final double shooterSimD = SHOOTER_KD;
 
   private final DCMotorSim shooterSim =
       new DCMotorSim(
@@ -87,7 +87,8 @@ public class ShooterColumIOSim implements ShooterColumIO {
   @Override
   public void setShooterVelocity(double velocityRotationsPerMin) {
     shooterClosedLoop = true;
-    shooterFFVolts = ks * Math.signum(velocityRotationsPerMin) + kv * velocityRotationsPerMin;
+    shooterFFVolts =
+        ks * Math.signum(velocityRotationsPerMin) + kv * (velocityRotationsPerMin / 60.0);
     shooterController.setSetpoint(velocityRotationsPerMin);
   }
 }
