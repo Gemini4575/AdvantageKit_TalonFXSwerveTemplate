@@ -39,7 +39,7 @@ public final class Constants {
     public static final int NEO_ADVANCER_MOTOR_ID = 8; // was climber
     public static final boolean ADVANCER_MOTOR_INVERTED = true;
     public static final boolean NEO_ADVANCER_MOTOR_INVERTED = false;
-    public static final boolean ROLLER_MOTOR_INVERTED = false;
+    public static final boolean ROLLER_MOTOR_INVERTED = true;
 
     public static final double KRAKEN_ADCNAVER_SPEED = 1.0;
 

@@ -279,7 +279,6 @@ public class RobotContainer {
                 shooter,
                 advancer));
 
-
     intake.setDefaultCommand(
         new ExtendOrRectactIntake(
             intake,
