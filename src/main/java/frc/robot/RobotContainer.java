@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.KrakenSong;
 import frc.robot.commands.intake.ExtendOrRectactIntake;
 import frc.robot.commands.intake.IntakeDown;
 import frc.robot.commands.intake.IntakeOff;
@@ -264,6 +265,22 @@ public class RobotContainer {
                 () ->
                     SmartDashboard.getNumber(
                         "Teleop Shoot Velocity", Constants.ShooterRPMConstants.HUB_SHOT)));
+
+    new JoystickButton(operator, 18)
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  shooter.setOpenLoop(-12.0);
+                  advancer.reverse();
+                },
+                () -> {
+                  shooter.stop();
+                  advancer.stopAdvancer();
+                },
+                shooter,
+                advancer));
+
+    new JoystickButton(operator, 19).onTrue(new KrakenSong(intake, advancer));
 
     intake.setDefaultCommand(
         new ExtendOrRectactIntake(

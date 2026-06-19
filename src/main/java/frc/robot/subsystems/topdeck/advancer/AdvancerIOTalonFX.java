@@ -6,6 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -76,5 +77,10 @@ public class AdvancerIOTalonFX implements AdvancerIO {
   @Override
   public void setAdvancerVelocity(double velocityRotationsPerMin) {
     advancerMotor.setControl(velocityRequest.withVelocity(velocityRotationsPerMin / 60.0));
+  }
+
+  @Override
+  public void setMusicTone(double frequencyHz) {
+    advancerMotor.setControl(new MusicTone(frequencyHz));
   }
 }

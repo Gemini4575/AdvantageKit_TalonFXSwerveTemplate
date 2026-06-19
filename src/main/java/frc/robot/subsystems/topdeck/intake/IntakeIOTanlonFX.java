@@ -3,6 +3,7 @@ package frc.robot.subsystems.topdeck.intake;
 import static frc.robot.Constants.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -74,5 +75,12 @@ public class IntakeIOTanlonFX implements intakeIO {
   public void setKrakenOpenLoop(double output) {
     intakeMotor1.set(output);
     intakeMotor2.set(output);
+  }
+
+  @Override
+  public void setMusicTone(double frequencyHz) {
+    MusicTone tone = new MusicTone(frequencyHz);
+    intakeMotor1.setControl(tone);
+    intakeMotor2.setControl(tone);
   }
 }

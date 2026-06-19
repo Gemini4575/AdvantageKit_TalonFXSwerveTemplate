@@ -34,6 +34,10 @@ public class AdvancerMotor {
     io.setAdvancerVelocity(velocityRotationsPerMin);
   }
 
+  public void playMusicTone(double frequencyHz) {
+    io.setMusicTone(frequencyHz);
+  }
+
   public double getPositionRot() {
     return inputs.advancerPositionRot;
   }

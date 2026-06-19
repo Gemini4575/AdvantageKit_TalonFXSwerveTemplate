@@ -29,4 +29,7 @@ public interface AdvancerIO {
 
   /** Run the advancer motor at the specified velocity. */
   public default void setAdvancerVelocity(double velocityRotationsPerMin) {}
+
+  /** Play a musical tone on the advancer motor, if supported. */
+  public default void setMusicTone(double frequencyHz) {}
 }

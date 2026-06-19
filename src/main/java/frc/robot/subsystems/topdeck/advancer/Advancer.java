@@ -124,6 +124,10 @@ public class Advancer extends SubsystemBase {
     roller.setVelocity(velocityRPM);
   }
 
+  public void playMusicTone(double frequencyHz) {
+    talonAdvancer.playMusicTone(frequencyHz);
+  }
+
   public Command talonSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return run(this::stopAdvancer)
         .withTimeout(1.0)

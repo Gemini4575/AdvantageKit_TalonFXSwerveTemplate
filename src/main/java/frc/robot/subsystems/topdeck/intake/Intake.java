@@ -60,6 +60,10 @@ public class Intake extends SubsystemBase {
     rotatorIO.setIntakeOpenLoop(0.0);
   }
 
+  public void playMusicTone(double frequencyHz) {
+    rollerIO.setMusicTone(frequencyHz);
+  }
+
   public void stop() {
     stopIntake();
     stopRotator();

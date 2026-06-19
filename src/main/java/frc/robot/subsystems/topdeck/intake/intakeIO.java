@@ -48,4 +48,7 @@ public interface intakeIO {
 
   /** Run the kraken motor at the specified voltage. */
   public default void setKrakenVoltage(double volts) {}
+
+  /** Play a musical tone on the kraken motor, if supported. */
+  public default void setMusicTone(double frequencyHz) {}
 }
