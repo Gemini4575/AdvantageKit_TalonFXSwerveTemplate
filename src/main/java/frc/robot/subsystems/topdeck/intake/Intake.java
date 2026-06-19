@@ -43,12 +43,12 @@ public class Intake extends SubsystemBase {
 
   public void intake() {
     Constants.States.INTAKE_ON = true;
-    rollerIO.setKrakenOpenLoop(INTAKE_SPEED);
+    rollerIO.setKrakenVoltage(12);
   }
 
   public void outtake() {
     Constants.States.INTAKE_ON = true;
-    rollerIO.setKrakenOpenLoop(-INTAKE_SPEED);
+    rollerIO.setKrakenVoltage(-12);
   }
 
   public void stopIntake() {
