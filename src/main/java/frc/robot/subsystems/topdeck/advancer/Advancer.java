@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -66,59 +67,69 @@ public class Advancer extends SubsystemBase {
   }
 
   public void reverse() {
+    Constants.States.ADVANCER_ON = true;
     talonAdvancer.setOpenLoop(KRAKEN_ADCNAVER_SPEED);
     neoAdvancer.setOpenLoop(NEO_ADVANCER_SPEED);
     roller.setOpenLoop(-12);
   }
 
   public void advancerOnlyReverse() {
+    Constants.States.ADVANCER_ON = true;
     talonAdvancer.setOpenLoop(KRAKEN_ADCNAVER_SPEED);
     neoAdvancer.setOpenLoop(NEO_ADVANCER_SPEED);
   }
 
   public void stopAdvancer() {
+    Constants.States.ADVANCER_ON = false;
     talonAdvancer.stop();
     neoAdvancer.stop();
     roller.stop();
   }
 
   public void advance() {
+    Constants.States.ADVANCER_ON = true;
     talonAdvancer.setOpenLoop(-KRAKEN_ADCNAVER_SPEED);
     neoAdvancer.setOpenLoop(-NEO_ADVANCER_SPEED);
     roller.setOpenLoop(12);
   }
 
   public void runTalonCharacterization(double volts) {
+    Constants.States.ADVANCER_ON = Math.abs(volts) > 0.0;
     talonAdvancer.setVoltage(volts);
     neoAdvancer.stop();
     roller.stop();
   }
 
   public void runNeoCharacterization(double volts) {
+    Constants.States.ADVANCER_ON = Math.abs(volts) > 0.0;
     talonAdvancer.stop();
     neoAdvancer.setVoltage(volts);
     roller.stop();
   }
 
   public void runRollerCharacterization(double volts) {
+    Constants.States.ADVANCER_ON = Math.abs(volts) > 0.0;
     talonAdvancer.stop();
     neoAdvancer.stop();
     roller.setVoltage(volts);
   }
 
   public void runTalonVelocity(double velocityRPM) {
+    Constants.States.ADVANCER_ON = Math.abs(velocityRPM) > 0.0;
     talonAdvancer.setVelocity(velocityRPM);
     neoAdvancer.stop();
     roller.stop();
   }
 
   public void runNeoVelocity(double velocityRPM) {
+    Constants.States.ADVANCER_ON = Math.abs(velocityRPM) > 0.0;
     talonAdvancer.stop();
     neoAdvancer.setVelocity(velocityRPM);
     roller.stop();
   }
 
   public void runRollerVelocity(double velocityRPM) {
+    Constants.States.ADVANCER_ON = Math.abs(velocityRPM) > 0.0;
     talonAdvancer.stop();
     neoAdvancer.stop();
     roller.setVelocity(velocityRPM);

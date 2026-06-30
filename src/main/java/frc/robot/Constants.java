@@ -102,6 +102,17 @@ public final class Constants {
     public static final int ALLIANCE_WALL_SHOT = 5895;
   }
 
+  public static final class LightConstants {
+    public static final int BLINKIN_PWM_PORT = 0;
+
+    public static final double IDLE_PATTERN = 0.51; // Color Waves, Color 1 and 2
+    public static final double AUTONOMOUS_PATTERN = 0.89; // Violet
+    public static final double SHOOTER_PATTERN = 0.61; // Red
+    public static final double ADVANCER_PATTERN = 0.67; // Yellow
+    public static final double INTAKE_PATTERN = 0.75; // Green
+    public static final double LOST_DS_PATTERN = 0.99; // Black/off
+  }
+
   public static class States {
     public static Boolean SHOOTER_ON = false;
     public static Boolean INTAKE_ON = false;

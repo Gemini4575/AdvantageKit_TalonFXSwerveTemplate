@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -52,6 +53,7 @@ public class Shooter extends SubsystemBase {
    * @param velocity Velocity in RPM
    */
   public void runVelocity(double velocity) {
+    Constants.States.SHOOTER_ON = Math.abs(velocity) > 0.0;
     for (int i = 0; i < 4; i++) {
       shooterColums[i].setVelocity(velocity);
     }
@@ -63,6 +65,7 @@ public class Shooter extends SubsystemBase {
    * @param output Voltage in volts
    */
   public void setOpenLoop(double output) {
+    Constants.States.SHOOTER_ON = Math.abs(output) > 0.0;
     for (int i = 0; i < 4; i++) {
       shooterColums[i].setOpenLoop(output);
     }
@@ -70,6 +73,7 @@ public class Shooter extends SubsystemBase {
 
   /** Stops the shooter. */
   public void stop() {
+    Constants.States.SHOOTER_ON = false;
     for (int i = 0; i < 4; i++) {
       shooterColums[i].stop();
     }

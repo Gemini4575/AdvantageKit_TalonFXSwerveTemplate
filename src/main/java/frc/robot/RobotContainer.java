@@ -46,6 +46,7 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.lights.Lights;
 import frc.robot.subsystems.topdeck.advancer.Advancer;
 import frc.robot.subsystems.topdeck.advancer.AdvancerIO;
 import frc.robot.subsystems.topdeck.advancer.AdvancerIOSim;
@@ -80,6 +81,7 @@ public class RobotContainer {
   private final Shooter shooter;
   private final Advancer advancer;
   private final Intake intake;
+  private final Lights lights;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(2);
@@ -119,6 +121,7 @@ public class RobotContainer {
         advancer =
             new Advancer(new AdvancerIOTalonFX(), new AdvancerIOSpark(), new AdvancerIOSparkFlex());
         intake = new Intake(new IntakeIOSpark(), new IntakeIOTanlonFX());
+        lights = new Lights();
         break;
 
       case SIM:
@@ -138,6 +141,7 @@ public class RobotContainer {
                 new ShooterColumIOSim(3));
         advancer = new Advancer(new AdvancerIOSim(), new AdvancerIOSim(), new AdvancerIOSim());
         intake = new Intake(new IntakeIOSim(), new IntakeIOSim());
+        lights = new Lights();
 
         break;
 
@@ -158,6 +162,7 @@ public class RobotContainer {
                 new ShooterColumIO() {});
         advancer = new Advancer(new AdvancerIO() {}, new AdvancerIO() {}, new AdvancerIO() {});
         intake = new Intake(new intakeIO() {}, new intakeIO() {});
+        lights = new Lights();
         break;
     }
     // Set up auto routines after named commands are registered.
@@ -404,7 +409,8 @@ public class RobotContainer {
     boolean shooterOk = shooter.printHealth();
     boolean advancerOk = advancer.printHealth();
     boolean intakeOk = intake.printHealth();
-    boolean allGood = driveOk && shooterOk && advancerOk && intakeOk;
+    boolean lightsOk = lights.printHealth();
+    boolean allGood = driveOk && shooterOk && advancerOk && intakeOk && lightsOk;
     System.out.println("Overall robot health: " + (allGood ? "GOOD" : "BAD"));
     System.out.println("============================================");
   }
