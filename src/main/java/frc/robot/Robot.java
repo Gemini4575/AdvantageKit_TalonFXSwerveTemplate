@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -73,14 +74,14 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     // Logs the USB drives current storage useage and capacity to smartdashboard.
-    long totalSpace = new File("/media/sda1").getTotalSpace();
-    long freeSpace = new File("/media/sda1").getFreeSpace();
+    long totalSpace = new File("/u/").getTotalSpace();
+    long freeSpace = new File("/u/").getFreeSpace();
 
     double totalSpaceGB = totalSpace / (1024.0 * 1024.0 * 1024.0);
     double freeSpaceGB = freeSpace / (1024.0 * 1024.0 * 1024.0);
 
-    SmartDashboard.putNumber("Storage/Total", totalSpaceGB);
-    SmartDashboard.putNumber("Storage/Free", freeSpaceGB);
+    SmartDashboard.putNumber("Storage/Total GB", totalSpaceGB);
+    SmartDashboard.putNumber("Storage/Free GB", freeSpaceGB);
   }
 
   /** This function is called periodically during all modes. */
