@@ -105,7 +105,7 @@ public final class Constants {
   public static final class LightConstants {
     public static final int BLINKIN_PWM_PORT = 0;
 
-    public static final double IDLE_PATTERN = 0.53; // Color Waves, Color 1 and 2
+    public static final double IDLE_PATTERN = 0.49; // Color Waves, Color 1 and 2
     public static final double AUTONOMOUS_PATTERN = 0.89; // Violet
     public static final double SHOOTER_PATTERN = -0.87; // Red
     public static final double ADVANCER_PATTERN = 0.67; // Yellow

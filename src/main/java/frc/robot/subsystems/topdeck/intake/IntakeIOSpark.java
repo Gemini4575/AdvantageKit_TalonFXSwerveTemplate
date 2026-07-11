@@ -23,7 +23,7 @@ public class IntakeIOSpark implements intakeIO {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30, 30)
         .voltageCompensation(12)
-        .inverted(true);
+        .inverted(false);
     rotatorConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
     rotatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     rotatorConfig.softLimit.reverseSoftLimit(Intake_Up_SetPoint);
