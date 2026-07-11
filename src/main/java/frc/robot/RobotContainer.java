@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.vision.VisionConstants.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -62,6 +64,9 @@ import frc.robot.subsystems.topdeck.shooter.Shooter;
 import frc.robot.subsystems.topdeck.shooter.ShooterColumIO;
 import frc.robot.subsystems.topdeck.shooter.ShooterColumIOSim;
 import frc.robot.subsystems.topdeck.shooter.ShooterColumIOSpark;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -82,6 +87,7 @@ public class RobotContainer {
   private final Advancer advancer;
   private final Intake intake;
   private final Lights lights;
+  private final Vision vision;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(2);
@@ -122,6 +128,11 @@ public class RobotContainer {
             new Advancer(new AdvancerIOTalonFX(), new AdvancerIOSpark(), new AdvancerIOSparkFlex());
         intake = new Intake(new IntakeIOSpark(), new IntakeIOTanlonFX());
         lights = new Lights();
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                new VisionIOPhotonVision(camera1Name, robotToCamera1));
         break;
 
       case SIM:
@@ -142,6 +153,11 @@ public class RobotContainer {
         advancer = new Advancer(new AdvancerIOSim(), new AdvancerIOSim(), new AdvancerIOSim());
         intake = new Intake(new IntakeIOSim(), new IntakeIOSim());
         lights = new Lights();
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
+                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
 
         break;
 
@@ -163,6 +179,7 @@ public class RobotContainer {
         advancer = new Advancer(new AdvancerIO() {}, new AdvancerIO() {}, new AdvancerIO() {});
         intake = new Intake(new intakeIO() {}, new intakeIO() {});
         lights = new Lights();
+        vision = new Vision((pose, timestampSeconds, visionMeasurementStdDevs) -> {});
         break;
     }
     // Set up auto routines after named commands are registered.
