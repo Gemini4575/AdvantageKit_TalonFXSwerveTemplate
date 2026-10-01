@@ -57,8 +57,12 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
-    public static final int TOP_INTAKE_MOTOR_ID = 3;
-    public static final int BOTTOM_INTAKE_MOTOR_ID = 4;
+    /** Primary Kraken driving the intake shaft. */
+    public static final int INTAKE_LEADER_MOTOR_ID = 3;
+
+    /** Second Kraken mechanically coupled to the same intake shaft. */
+    public static final int INTAKE_FOLLOWER_MOTOR_ID = 4;
+
     public static final int INTAKE_ROTATOR_CAN_ID = 5;
     public static final double INTAKE_SPEED = 1.0;
     public static final double Intake_Hold_KP = 0.08;

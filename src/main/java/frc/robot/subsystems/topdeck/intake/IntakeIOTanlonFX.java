@@ -3,17 +3,19 @@ package frc.robot.subsystems.topdeck.intake;
 import static frc.robot.Constants.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.wpilibj.Timer;
 
 public class IntakeIOTanlonFX implements intakeIO {
-  private final TalonFX intakeMotor1;
-  private final TalonFX intakeMotor2;
+  private final TalonFX intakeLeader;
+  private final TalonFX intakeFollower;
 
   public IntakeIOTanlonFX() {
-    intakeMotor1 = new TalonFX(TOP_INTAKE_MOTOR_ID);
-    intakeMotor2 = new TalonFX(BOTTOM_INTAKE_MOTOR_ID);
+    intakeLeader = new TalonFX(INTAKE_LEADER_MOTOR_ID);
+    intakeFollower = new TalonFX(INTAKE_FOLLOWER_MOTOR_ID);
 
     TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration();
     intakeMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -23,32 +25,35 @@ public class IntakeIOTanlonFX implements intakeIO {
     intakeMotorConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast;
     intakeMotorConfig.MotorOutput.Inverted =
         com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    intakeMotor1.getConfigurator().apply(intakeMotorConfig);
-    intakeMotor2.getConfigurator().apply(intakeMotorConfig);
+    intakeLeader.getConfigurator().apply(intakeMotorConfig);
+    intakeFollower.getConfigurator().apply(intakeMotorConfig);
+
+    // Both Krakens drive the same shaft, so the second motor mirrors the leader in hardware.
+    intakeFollower.setControl(new Follower(INTAKE_LEADER_MOTOR_ID, MotorAlignmentValue.Opposed));
   }
 
   @Override
   public void updateInputs(intakeIOInputs inputs) {
     inputs.intakeConnected = true;
     inputs.intakeKrakenPositionRot =
-        (intakeMotor1.getPosition().getValueAsDouble()
-                + intakeMotor2.getPosition().getValueAsDouble())
+        (intakeLeader.getPosition().getValueAsDouble()
+                + intakeFollower.getPosition().getValueAsDouble())
             / 2.0;
     inputs.intakeKrakenVelocityRPM =
-        (intakeMotor1.getVelocity().getValueAsDouble()
-                + intakeMotor2.getVelocity().getValueAsDouble())
+        (intakeLeader.getVelocity().getValueAsDouble()
+                + intakeFollower.getVelocity().getValueAsDouble())
             * 30.0;
     inputs.intakeKrakenSupplyCurrentAmps =
-        (intakeMotor1.getSupplyCurrent().getValueAsDouble()
-                + intakeMotor2.getSupplyCurrent().getValueAsDouble())
+        (intakeLeader.getSupplyCurrent().getValueAsDouble()
+                + intakeFollower.getSupplyCurrent().getValueAsDouble())
             / 2.0;
     inputs.intakeKrakenStatorCurrentAmps =
-        (intakeMotor1.getStatorCurrent().getValueAsDouble()
-                + intakeMotor2.getStatorCurrent().getValueAsDouble())
+        (intakeLeader.getStatorCurrent().getValueAsDouble()
+                + intakeFollower.getStatorCurrent().getValueAsDouble())
             / 2.0;
     inputs.intakeKrakenAppliedVolts =
-        (intakeMotor1.getMotorVoltage().getValueAsDouble()
-                + intakeMotor2.getMotorVoltage().getValueAsDouble())
+        (intakeLeader.getMotorVoltage().getValueAsDouble()
+                + intakeFollower.getMotorVoltage().getValueAsDouble())
             / 2.0;
     inputs.odometryKrakenTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryKrakenPositionsRot = new double[] {inputs.intakeKrakenPositionRot};
@@ -56,31 +61,28 @@ public class IntakeIOTanlonFX implements intakeIO {
   }
 
   /**
-   * Run the intake Krakens at a voltage
+   * Run the primary intake Kraken at a voltage. The second Kraken follows it in hardware.
    *
    * @param voltage The voltage to run the intake motors at
    */
   @Override
   public void setKrakenVoltage(double voltage) {
-    intakeMotor1.setVoltage(voltage);
-    intakeMotor2.setVoltage(voltage);
+    intakeLeader.setVoltage(voltage);
   }
 
   /**
-   * * Run the intake Krakens at a percetage
+   * Run the primary intake Kraken at a percentage. The second Kraken follows it in hardware.
    *
    * @param output The percent that the motors run at 1.0 to -1.0
    */
   @Override
   public void setKrakenOpenLoop(double output) {
-    intakeMotor1.set(output);
-    intakeMotor2.set(output);
+    intakeLeader.set(output);
   }
 
   @Override
   public void setMusicTone(double frequencyHz) {
     MusicTone tone = new MusicTone(frequencyHz);
-    intakeMotor1.setControl(tone);
-    intakeMotor2.setControl(tone);
+    intakeLeader.setControl(tone);
   }
 }
