@@ -66,7 +66,7 @@ public final class Constants {
     public static final int INTAKE_ROTATOR_CAN_ID = 5;
     public static final double INTAKE_SPEED = 1.0;
     public static final double Intake_Hold_KP = 0.08;
-    public static final double Intake_Down_SetPoint = 24.0;
+    public static final double Intake_Down_SetPoint = 30.0;
     public static final double Intake_Up_SetPoint = 5;
   }
 
