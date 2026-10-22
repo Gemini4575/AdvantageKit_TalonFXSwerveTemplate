@@ -11,18 +11,12 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -67,8 +61,8 @@ import frc.robot.subsystems.topdeck.shooter.ShooterColumIOSpark;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import java.util.ArrayList;
-import java.util.List;
+import frc.robot.util.AutoPreview;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -78,7 +72,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double PREVIEW_ANIMATION_SPEED_METERS_PER_SEC = 2.0;
   private static final double SLOW_DRIVE_SCALE = 0.5;
 
   // Subsystems
@@ -96,12 +89,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-
-  private Field2d m_field = new Field2d();
-  private String lastPreviewedAuto = "";
-  private boolean lastPreviewWasFlipped = false;
-  private List<Pose2d> previewPoses = List.of();
-  private double previewAnimationStartTime = 0.0;
+  private final AutoPreview autoPreview;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -195,32 +183,12 @@ public class RobotContainer {
     new EventTrigger("Intake Up").onTrue(new IntakeUp(intake));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addOption("Just Shoot", new ShootFromHubTele(shooter, advancer, () -> 2700));
+    autoPreview = new AutoPreview(autoChooser);
     configureElasticDashboard();
-    updateAutoPreview();
 
     // Configure the button bindings
     configureButtonBindings();
 
-    // Logging callback for current robot pose
-    PathPlannerLogging.setLogCurrentPoseCallback(
-        (pose) -> {
-          // Do whatever you want with the pose here
-          m_field.setRobotPose(pose);
-        });
-
-    // Logging callback for target robot pose
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (pose) -> {
-          // Do whatever you want with the pose here
-          m_field.getObject("target pose").setPose(pose);
-        });
-
-    // Logging callback for the active path, this is sent as a list of poses
-    PathPlannerLogging.setLogActivePathCallback(
-        (poses) -> {
-          // Do whatever you want with the poses here
-          m_field.getObject("path").setPoses(poses);
-        });
   }
 
   /**
@@ -320,104 +288,12 @@ public class RobotContainer {
 
   private void configureElasticDashboard() {
     SmartDashboard.putData("Auto Choices", autoChooser.getSendableChooser());
-    SmartDashboard.putData("Auto Preview", m_field);
     SmartDashboard.putNumber("Teleop Shoot Velocity", Constants.ShooterRPMConstants.HUB_SHOT);
   }
 
-  public void updateAutoPreview() {
-    String selectedAuto = autoChooser.getSendableChooser().getSelected();
-    boolean shouldFlip = AutoBuilder.shouldFlip();
-
-    if (selectedAuto == null || selectedAuto.equals("None")) {
-      m_field.getObject("path").setPoses(List.of());
-      previewPoses = List.of();
-      lastPreviewedAuto = "";
-      lastPreviewWasFlipped = shouldFlip;
-      return;
-    }
-
-    if (selectedAuto.equals(lastPreviewedAuto) && shouldFlip == lastPreviewWasFlipped) {
-      return;
-    }
-
-    try {
-      List<Pose2d> previewPoses = new ArrayList<>();
-      for (PathPlannerPath path : PathPlannerAuto.getPathGroupFromAutoFile(selectedAuto)) {
-        PathPlannerPath previewPath = shouldFlip && !path.preventFlipping ? path.flipPath() : path;
-        previewPoses.addAll(previewPath.getPathPoses());
-      }
-
-      m_field.getObject("path").setPoses(previewPoses);
-      if (!previewPoses.isEmpty()) {
-        m_field.setRobotPose(previewPoses.get(0));
-      }
-      this.previewPoses = List.copyOf(previewPoses);
-      previewAnimationStartTime = Timer.getFPGATimestamp();
-      lastPreviewedAuto = selectedAuto;
-      lastPreviewWasFlipped = shouldFlip;
-    } catch (Exception exception) {
-      DriverStation.reportWarning(
-          "Unable to preview selected auto path '" + selectedAuto + "': " + exception.getMessage(),
-          false);
-    }
-  }
-
-  public void updateAutoPreviewAnimation() {
-    if (previewPoses.isEmpty()) {
-      return;
-    }
-
-    double totalDistance = getPreviewDistance();
-    if (totalDistance <= 0.0) {
-      m_field.setRobotPose(previewPoses.get(0));
-      return;
-    }
-
-    double elapsedTime = Timer.getFPGATimestamp() - previewAnimationStartTime;
-    double previewDistance = (elapsedTime * PREVIEW_ANIMATION_SPEED_METERS_PER_SEC) % totalDistance;
-
-    m_field.setRobotPose(samplePreviewPose(previewDistance));
-  }
-
-  private double getPreviewDistance() {
-    double distance = 0.0;
-    for (int i = 1; i < previewPoses.size(); i++) {
-      distance +=
-          previewPoses
-              .get(i - 1)
-              .getTranslation()
-              .getDistance(previewPoses.get(i).getTranslation());
-    }
-    return distance;
-  }
-
-  private Pose2d samplePreviewPose(double previewDistance) {
-    double traversedDistance = 0.0;
-
-    for (int i = 1; i < previewPoses.size(); i++) {
-      Pose2d startPose = previewPoses.get(i - 1);
-      Pose2d endPose = previewPoses.get(i);
-      double segmentDistance = startPose.getTranslation().getDistance(endPose.getTranslation());
-
-      if (segmentDistance <= 0.0) {
-        continue;
-      }
-
-      if (traversedDistance + segmentDistance >= previewDistance) {
-        double interpolation = (previewDistance - traversedDistance) / segmentDistance;
-        return new Pose2d(
-            startPose.getTranslation().interpolate(endPose.getTranslation(), interpolation),
-            endPose.getTranslation().minus(startPose.getTranslation()).getAngle());
-      }
-
-      traversedDistance += segmentDistance;
-    }
-
-    return previewPoses.get(previewPoses.size() - 1);
-  }
-
-  public Field2d getPath() {
-    return m_field;
+  /** Updates the dashboard autonomous preview. Call this while disabled. */
+  public void periodic() {
+    autoPreview.periodic();
   }
 
   public void printSubsystemHealth() {
