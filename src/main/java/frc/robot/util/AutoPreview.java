@@ -38,7 +38,8 @@ public class AutoPreview {
     SmartDashboard.putData("Auto Preview", field);
 
     PathPlannerLogging.setLogCurrentPoseCallback(field::setRobotPose);
-    PathPlannerLogging.setLogTargetPoseCallback((pose) -> field.getObject("target pose").setPose(pose));
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (pose) -> field.getObject("target pose").setPose(pose));
     PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
 
     updatePreview();
