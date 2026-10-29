@@ -29,6 +29,32 @@ public final class Constants {
     REPLAY
   }
 
+  public static final class ElevatorConstants {
+    /** Leader and follower are the two NEOs mechanically coupled to the same gearbox. */
+    public static final int leaderCanId = 1;
+
+    public static final int followerCanId = 2;
+    public static final boolean leaderInverted = false;
+    public static final boolean followerInverted = true;
+
+    public static final double gearRatio = 5.0;
+    public static final double drumRadiusMeters = 0.0254;
+    public static final double metersPerMotorRotation =
+        2.0 * Math.PI * drumRadiusMeters / gearRatio;
+    public static final double carriageMassKg = 6.80388;
+    public static final double minHeightMeters = 0.0;
+    public static final double maxHeightMeters = 2.0;
+    public static final int currentLimitAmps = 40;
+
+    public static final double kP = 8.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kS = 0.0;
+    public static final double kG = 0.425;
+    public static final double kV = 4.312;
+    public static final double kA = 0.043;
+  }
+
   public static final class AdvancerConstants {
 
     public static final double ADVANCER_SPEED = -1.0;

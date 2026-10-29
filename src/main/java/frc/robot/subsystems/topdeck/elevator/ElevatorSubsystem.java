@@ -2,8 +2,8 @@ package frc.robot.subsystems.topdeck.elevator;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -42,7 +42,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setPosition(double positionMeters) {
     io.setPosition(
-        MathUtil.clamp(positionMeters, minHeightMeters, maxHeightMeters), feedforward.calculate(0.0));
+        MathUtil.clamp(positionMeters, minHeightMeters, maxHeightMeters),
+        feedforward.calculate(0.0));
   }
 
   public void setVoltage(double volts) {

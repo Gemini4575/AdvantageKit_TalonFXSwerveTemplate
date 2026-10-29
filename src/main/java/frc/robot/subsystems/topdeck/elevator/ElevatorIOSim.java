@@ -2,8 +2,8 @@ package frc.robot.subsystems.topdeck.elevator;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
@@ -30,7 +30,8 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.positionMeters = sim.getPositionMeters();
     inputs.velocityMetersPerSec = sim.getVelocityMetersPerSecond();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps() / 2.0, sim.getCurrentDrawAmps() / 2.0};
+    inputs.currentAmps =
+        new double[] {sim.getCurrentDrawAmps() / 2.0, sim.getCurrentDrawAmps() / 2.0};
   }
 
   @Override

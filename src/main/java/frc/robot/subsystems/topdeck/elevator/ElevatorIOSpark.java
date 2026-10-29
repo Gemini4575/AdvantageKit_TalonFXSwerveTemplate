@@ -4,8 +4,8 @@ import static frc.robot.Constants.ElevatorConstants.*;
 import static frc.robot.util.SparkUtil.ifOk;
 import static frc.robot.util.SparkUtil.tryUntilOk;
 
-import com.revrobotics.REVLibError;
 import com.revrobotics.PersistMode;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -37,7 +37,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         .positionConversionFactor(metersPerMotorRotation)
         .velocityConversionFactor(metersPerMotorRotation / 60.0);
     leaderConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(kP, kI, kD);
-    leaderConfig.softLimit
+    leaderConfig
+        .softLimit
         .forwardSoftLimit(maxHeightMeters)
         .forwardSoftLimitEnabled(true)
         .reverseSoftLimit(minHeightMeters)
@@ -46,7 +47,9 @@ public class ElevatorIOSpark implements ElevatorIO {
     tryUntilOk(
         leader,
         5,
-        () -> leader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        () ->
+            leader.configure(
+                leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     var followerConfig = new SparkMaxConfig();
     followerConfig

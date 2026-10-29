@@ -1,6 +1,5 @@
 package frc.robot.subsystems.topdeck.elevator;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -9,13 +8,13 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-//NOTE - Add these to Robotcontainer.java
-// private final ElevatorSubsystemSim elevatorsim; - This should be where you define your other subsystems.
-// elevatorsim = new ElevatorSubsystemSim(elevator); - this goes in the actual RobotContainer function.
+// NOTE - Add these to Robotcontainer.java
+// private final ElevatorSubsystemSim elevatorsim; - This should be where you define your other
+// subsystems.
+// elevatorsim = new ElevatorSubsystemSim(elevator); - this goes in the actual RobotContainer
+// function.
 
-/**
- * Visualization for the elevator subsystem in simulation.
- */
+/** Visualization for the elevator subsystem in simulation. */
 public class ElevatorSubsystemSim extends SubsystemBase {
 
   private final ElevatorSubsystem elevator;
@@ -57,37 +56,25 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     root = mech.getRoot("ElevatorRoot", 200, 50);
 
     // Add elevator base
-    MechanismLigament2d elevatorBase = root.append(
-      new MechanismLigament2d(
-        "Base",
-        BASE_HEIGHT,
-        90,
-        6,
-        new Color8Bit(Color.kDarkGray)
-      )
-    );
+    MechanismLigament2d elevatorBase =
+        root.append(
+            new MechanismLigament2d("Base", BASE_HEIGHT, 90, 6, new Color8Bit(Color.kDarkGray)));
 
     // Add elevator tower
-    MechanismLigament2d elevatorTower = elevatorBase.append(
-      new MechanismLigament2d(
-        "Tower",
-        (maxHeight - minHeight) * visualScaleFactor,
-        90,
-        VISUAL_WIDTH,
-        new Color8Bit(Color.kGray)
-      )
-    );
+    MechanismLigament2d elevatorTower =
+        elevatorBase.append(
+            new MechanismLigament2d(
+                "Tower",
+                (maxHeight - minHeight) * visualScaleFactor,
+                90,
+                VISUAL_WIDTH,
+                new Color8Bit(Color.kGray)));
 
     // Add elevator carriage
-    elevatorMech = root.append(
-      new MechanismLigament2d(
-        "Elevator",
-        BASE_HEIGHT,
-        90,
-        CARRIAGE_WIDTH,
-        new Color8Bit(Color.kBlue)
-      )
-    );
+    elevatorMech =
+        root.append(
+            new MechanismLigament2d(
+                "Elevator", BASE_HEIGHT, 90, CARRIAGE_WIDTH, new Color8Bit(Color.kBlue)));
 
     // Initialize visualization
     SmartDashboard.putData("Elevator Sim", mech);
@@ -97,19 +84,12 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   public void periodic() {
     // Update elevator height
     double currentHeight = elevator.getPositionMeters();
-    double displayHeight =
-      BASE_HEIGHT + (currentHeight - minHeight) * visualScaleFactor;
+    double displayHeight = BASE_HEIGHT + (currentHeight - minHeight) * visualScaleFactor;
     elevatorMech.setLength(displayHeight);
 
     // Add telemetry data
     SmartDashboard.putNumber("Elevator Height (m)", currentHeight);
-    SmartDashboard.putNumber(
-      "Elevator Velocity (m/s)",
-      elevator.getVelocityMetersPerSecond()
-    );
-    SmartDashboard.putNumber(
-      "Elevator Current (A)",
-      0.0
-    );
+    SmartDashboard.putNumber("Elevator Velocity (m/s)", elevator.getVelocityMetersPerSecond());
+    SmartDashboard.putNumber("Elevator Current (A)", 0.0);
   }
 }
