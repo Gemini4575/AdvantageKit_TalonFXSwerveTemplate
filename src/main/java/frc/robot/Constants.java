@@ -83,10 +83,10 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
-    /** Primary Kraken driving the intake shaft. */
+    /** Primary NEO driving the intake shaft. */
     public static final int INTAKE_LEADER_MOTOR_ID = 3;
 
-    /** Second Kraken mechanically coupled to the same intake shaft. */
+    /** Second NEO mechanically coupled to the same intake shaft. */
     public static final int INTAKE_FOLLOWER_MOTOR_ID = 4;
 
     public static final int INTAKE_ROTATOR_CAN_ID = 5;
