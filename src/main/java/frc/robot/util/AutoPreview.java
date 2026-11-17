@@ -1,3 +1,4 @@
+
 // Copyright (c) 2021-2026 Littleton Robotics
 // http://github.com/Mechanical-Advantage
 //
@@ -10,77 +11,50 @@ package frc.robot.util;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-/** Displays a selected PathPlanner auto and animates its robot along the preview path. */
+/** Publishes and animates the currently selected PathPlanner autonomous routine. */
 public class AutoPreview {
-  private static final double DEFAULT_ANIMATION_SPEED_METERS_PER_SEC = 2.0;
+  private static final double ANIMATION_SPEED_METERS_PER_SEC = 2.0;
 
-  private final Field2d field;
-  private final Supplier<String> selectedAutoSupplier;
-  private final BooleanSupplier shouldFlipSupplier;
-  private final double animationSpeedMetersPerSec;
-
+  private final LoggedDashboardChooser<Command> autoChooser;
+  private final Field2d field = new Field2d();
   private String lastPreviewedAuto = "";
-  private boolean lastPreviewWasFlipped;
+  private boolean lastPreviewWasFlipped = false;
   private List<Pose2d> previewPoses = List.of();
-  private double animationStartTime;
+  private double animationStartTime = 0.0;
 
-  /**
-   * Creates a preview that follows PathPlanner's current alliance flip setting.
-   *
-   * @param field field widget to update and animate
-   * @param selectedAutoSupplier supplier for the selected PathPlanner auto name; use "None" for no
-   *     selection
-   */
-  public AutoPreview(Field2d field, Supplier<String> selectedAutoSupplier) {
-    this(field, selectedAutoSupplier, AutoBuilder::shouldFlip);
+  /** Creates a dashboard preview for the supplied autonomous chooser. */
+  public AutoPreview(LoggedDashboardChooser<Command> autoChooser) {
+    this.autoChooser = autoChooser;
+    SmartDashboard.putData("Auto Preview", field);
+
+    PathPlannerLogging.setLogCurrentPoseCallback(field::setRobotPose);
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (pose) -> field.getObject("target pose").setPose(pose));
+    PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
+
+    updatePreview();
   }
 
-  /**
-   * Creates a preview with an explicit flip setting source.
-   *
-   * @param field field widget to update and animate
-   * @param selectedAutoSupplier supplier for the selected PathPlanner auto name; use "None" for no
-   *     selection
-   * @param shouldFlipSupplier supplier for whether paths should be flipped
-   */
-  public AutoPreview(
-      Field2d field, Supplier<String> selectedAutoSupplier, BooleanSupplier shouldFlipSupplier) {
-    this(field, selectedAutoSupplier, shouldFlipSupplier, DEFAULT_ANIMATION_SPEED_METERS_PER_SEC);
+  /** Updates the selected route and advances its dashboard animation. Call while disabled. */
+  public void periodic() {
+    updatePreview();
+    updateAnimation();
   }
 
-  /**
-   * Creates a preview with explicit inputs and animation speed.
-   *
-   * @param field field widget to update and animate
-   * @param selectedAutoSupplier supplier for the selected PathPlanner auto name; use "None" for no
-   *     selection
-   * @param shouldFlipSupplier supplier for whether paths should be flipped
-   * @param animationSpeedMetersPerSec animation speed in meters per second
-   */
-  public AutoPreview(
-      Field2d field,
-      Supplier<String> selectedAutoSupplier,
-      BooleanSupplier shouldFlipSupplier,
-      double animationSpeedMetersPerSec) {
-    this.field = field;
-    this.selectedAutoSupplier = selectedAutoSupplier;
-    this.shouldFlipSupplier = shouldFlipSupplier;
-    this.animationSpeedMetersPerSec = animationSpeedMetersPerSec;
-  }
-
-  /** Refreshes the path display when the selected auto or flip setting changes. */
-  public void update() {
-    String selectedAuto = selectedAutoSupplier.get();
-    boolean shouldFlip = shouldFlipSupplier.getAsBoolean();
+  private void updatePreview() {
+    String selectedAuto = autoChooser.getSendableChooser().getSelected();
+    boolean shouldFlip = AutoBuilder.shouldFlip();
 
     if (selectedAuto == null || selectedAuto.equals("None")) {
       field.getObject("path").setPoses(List.of());
@@ -116,8 +90,7 @@ public class AutoPreview {
     }
   }
 
-  /** Advances the robot marker along the currently displayed path. */
-  public void updateAnimation() {
+  private void updateAnimation() {
     if (previewPoses.isEmpty()) {
       return;
     }
@@ -129,13 +102,8 @@ public class AutoPreview {
     }
 
     double elapsedTime = Timer.getFPGATimestamp() - animationStartTime;
-    double previewDistance = (elapsedTime * animationSpeedMetersPerSec) % totalDistance;
+    double previewDistance = (elapsedTime * ANIMATION_SPEED_METERS_PER_SEC) % totalDistance;
     field.setRobotPose(samplePreviewPose(previewDistance));
-  }
-
-  /** Returns the field widget owned by this preview. */
-  public Field2d getField() {
-    return field;
   }
 
   private double getPreviewDistance() {
