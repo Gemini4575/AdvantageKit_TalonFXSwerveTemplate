@@ -24,6 +24,7 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.topdeck.elevator.Elevator;
 import frc.robot.subsystems.topdeck.intake.Intake;
 import frc.robot.subsystems.topdeck.intake.IntakeIOSim;
 import frc.robot.subsystems.topdeck.intake.IntakeIOSpark;
@@ -38,7 +39,9 @@ public class RobotContainer {
 
   private final Drive drive;
   private final Intake intake;
+  private final Elevator elevator;
   private final Joystick driver = new Joystick(0);
+  private final Joystick operator = new Joystick(1);
   private final LoggedDashboardChooser<Command> autoChooser;
   private final AutoPreview autoPreview;
 
@@ -54,6 +57,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
         intake = new Intake(new IntakeIOSpark(), new IntakeIOTanlonFX());
+        elevator = new Elevator();
         break;
 
       case SIM:
@@ -65,6 +69,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
         intake = new Intake(new IntakeIOSim(), new IntakeIOSim());
+        elevator = new Elevator();
         break;
 
       default:
@@ -76,6 +81,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         intake = new Intake(new intakeIO() {}, new intakeIO() {});
+        elevator = new Elevator();
         break;
     }
 
@@ -112,6 +118,13 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtRelativeAngle(
                 drive, () -> driver.getY(), () -> driver.getX(), Rotation2d.fromDegrees(180.0)));
+
+    /* Elevator Buttons */
+    new JoystickButton(operator, 12).onTrue(elevator.goToSetpoint(() -> Elevator.Setpoint.Bottom));
+
+    new JoystickButton(operator, 11).onTrue(elevator.goToSetpoint(() -> Elevator.Setpoint.Resting));
+
+    new JoystickButton(operator, 13).onTrue(elevator.goToSetpoint(() -> Elevator.Setpoint.Top));
   }
 
   /**
